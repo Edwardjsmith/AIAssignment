@@ -22,7 +22,13 @@ public class AI : MonoBehaviour
     private InventoryController _agentInventory;
     // This is the script containing the AI agents actions
     // e.g. agentScript.MoveTo(enemy);
-    private AgentActions _agentActions;
+    public AgentActions _agentActions;
+
+    public Vector3 targetPos;
+
+    Move move;
+
+
 
     // Use this for initialization
     void Start ()
@@ -32,11 +38,17 @@ public class AI : MonoBehaviour
         _agentActions = GetComponent<AgentActions>();
         _agentSenses = GetComponentInChildren<Sensing>();
         _agentInventory = GetComponentInChildren<InventoryController>();
+
+        move = new Move();
+        move.initialiseNode(this);
+        move.Start();
+
+        targetPos = new Vector3(Random.Range(0, 1000), Random.Range(0, 1000), Random.Range(0, 1000));
     }
 
     // Update is called once per frame
     void Update ()
     {
-
+        move.Update();
     }
 }
