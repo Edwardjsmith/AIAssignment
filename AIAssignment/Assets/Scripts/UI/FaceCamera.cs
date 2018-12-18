@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Ensure that the canvas is always facing the camera
+/// Ensure that the AI agents ui is always facing the camera
 /// </summary>
 public class FaceCamera : MonoBehaviour
 {

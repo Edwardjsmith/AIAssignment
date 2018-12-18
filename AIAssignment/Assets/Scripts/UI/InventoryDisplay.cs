@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Display the contents of the inventory in the agents UI, except for the flags
+/// which continue to be rendered
+/// </summary>
 public class InventoryDisplay : MonoBehaviour
 {
     public GameObject ItemSprite;

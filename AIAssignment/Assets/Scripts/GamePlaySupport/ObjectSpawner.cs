@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Spawns collectable objects after a short delay
+/// </summary>
 public class ObjectSpawner : MonoBehaviour
 {
+    // Prefab to spawn
     public GameObject ObjectPrefabToSpawn;
     public int RespawnDelay = 5;
 
+    // The new GameObject
     private GameObject _newObject;
     private string _objectName;
     private bool _isSpawnScheduled = false;
@@ -18,6 +23,9 @@ public class ObjectSpawner : MonoBehaviour
         SpawnObject();
 	}
 
+    /// <summary>
+    /// Set the objects name from the prefab name
+    /// </summary>
     public void SetObjectName()
     {
         _objectName = ObjectPrefabToSpawn.name;
@@ -33,6 +41,10 @@ public class ObjectSpawner : MonoBehaviour
 	    }
 	}
 
+    /// <summary>
+    /// Delay the spawn for a few seconds
+    /// </summary>
+    /// <returns></returns>
     protected IEnumerator SpawnDelay()
     {
         yield return new WaitForSeconds(RespawnDelay);
@@ -41,6 +53,9 @@ public class ObjectSpawner : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// Perform the actual spawning
+    /// </summary>
     protected void SpawnObject()
     {
         _newObject = Instantiate(ObjectPrefabToSpawn, gameObject.transform.position, gameObject.transform.localRotation);

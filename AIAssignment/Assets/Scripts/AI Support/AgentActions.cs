@@ -1,7 +1,15 @@
 ﻿using UnityEngine;
+using System.Linq;
 
+/// <summary>
+/// This class provides an interface for all the actions the AI agent can take in the world
+/// These actions are detailed in the brief and the AI.cs file. Actions that require a target
+/// or an object take a GameObject as a parameter. The GameObject should be aqcuired from the
+/// AI agents senses
+/// </summary>
 public class AgentActions : MonoBehaviour
 {
+    // The name of the animation for the sword swing
     private const string AttackAnimationTrigger = "Attack";
 
     private AgentData _agentData;
@@ -13,13 +21,14 @@ public class AgentActions : MonoBehaviour
     private UnityEngine.AI.NavMeshAgent _navAgent;
     private Animator _swordAnimator;
 
+    // Show the AI mood
     private AiMoodIconController _agentMoodIndicator;
     public AiMoodIconController AiMoodIndicator
     {
         get { return _agentMoodIndicator; }
     }
 
-    // Use this for initialization
+    // Use this for initialization, get references to all the component scripts we'll need
     void Start()
     {
         _agentData = GetComponent<AgentData>();
@@ -30,6 +39,12 @@ public class AgentActions : MonoBehaviour
         _agentMoodIndicator = GetComponentInChildren<AiMoodIconController>();
     }
 
+    /// <summary>
+    /// Utility method to test for a valid destination on the navmesh
+    /// </summary>
+    /// <param name="destinationToTest">The location we are testing</param>
+    /// <param name="destination">A valid destination</param>
+    /// <returns>true if a destination was found, false otherwise</returns>
     private bool TestDestination(Vector3 destinationToTest, out Vector3 destination)
     {
         // Check we can move there
@@ -44,7 +59,11 @@ public class AgentActions : MonoBehaviour
         return false;
     }
 
-    // Move towards a target object
+    /// <summary>
+    /// Move towards the position of the target object
+    /// </summary>
+    /// <param name="target">the GameObject to move to</param>
+    /// <returns>true if we can move there, false otherwise</returns>
     public bool MoveTo(GameObject target)
     {
         if (target != null)
@@ -60,7 +79,11 @@ public class AgentActions : MonoBehaviour
         return false;
     }
 
-    // Move towards a target location
+    /// <summary>
+    /// Move towards a target location
+    /// </summary>
+    /// <param name="target">Location to move to as a Vector3</param>
+    /// <returns>true if we can move there, false otherwise</returns>
     public bool MoveTo(Vector3 target)
     {
         // Check we can move there
@@ -74,6 +97,9 @@ public class AgentActions : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Move to a nearby random location
+    /// </summary>
     public void MoveToRandomLocation()
     {
         // Choose a new direction
@@ -88,6 +114,11 @@ public class AgentActions : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Pick up a collectable item and put it in the inventory
+    /// A collected item is no longer visible to other AIs with the exception of the flag
+    /// </summary>
+    /// <param name="item">The item to pick up</param>
     public void CollectItem(GameObject item)
     {
         if (item != null)
@@ -122,6 +153,11 @@ public class AgentActions : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Drop an item stored in the inventory onto the ground
+    /// A dropped item becomes visible and collectable
+    /// </summary>
+    /// <param name="item">The item to drop</param>
     public void DropItem(GameObject item)
     {
             // Check we actually have it and its collectable
@@ -144,38 +180,60 @@ public class AgentActions : MonoBehaviour
             }
     }
 
-    // Attack the enemy
+    /// <summary>
+    /// Drop every item in the inventory
+    /// </summary>
+    public void DropAllItems()
+    {
+        // Get a list of all the items in the inventory by key
+        string[] inventoryKeys = _agentInventory.Items.Keys.ToArray();
+
+        // go through every key in the key list removing each item from the inventory
+        foreach (var key in inventoryKeys)
+        {
+            if (_agentInventory.HasItem(key))
+            {
+                GameObject item = _agentInventory.GetItem(key);
+                DropItem(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Attack an enemy AI if it is within range, a powerup will increase the damage done
+    /// </summary>
+    /// <param name="target">The target to attack</param>
     public void AttackEnemy(GameObject target)
     {
-        Debug.Log("Attacking " + target.name);
-
-        // But only if it is the enemy
+        // Only attack the enemy
         if (target.CompareTag(_agentData.EnemyTeamTag))
         {
-            // Swing the sword
-            _swordAnimator.SetTrigger(AttackAnimationTrigger);
-
             // Only do damage if we're within attack range
             if(_agentSenses.IsInAttackRange(target))
             {
+                // Swing the sword
+                _swordAnimator.SetTrigger(AttackAnimationTrigger);
+
                 // We may not always hit
                 if (UnityEngine.Random.value < _agentData.HitProbability)
                 {
                     int actualDamage = _agentData.NormalAttackDamage;
+
                     // Tell the enemy we hit them
                     if (_agentData.IsPoweredUp)
                     {
                         actualDamage *= _agentData.PowerUpAmount;
                     }
-                    // TODO: handle damage properly... events?
-                    //enemy..TakeDamage(actualDamage);
                     target.GetComponent<AgentData>().TakeDamage(actualDamage);
                 }
             }
         }
     }
 
-    // Move in the opposite direction to the enemy
+    /// <summary>
+    /// Flee from an object by moving in the opposite direction
+    /// </summary>
+    /// <param name="enemy">The object to flee from (expected to be an enemy AI)</param>
     public void Flee(GameObject enemy)
     {
         // Turn away from the threat

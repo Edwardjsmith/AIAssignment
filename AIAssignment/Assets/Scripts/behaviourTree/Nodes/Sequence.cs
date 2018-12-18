@@ -5,7 +5,7 @@ using UnityEngine;
 public class Sequence : Node {
 
     List<Node> nodes;
-    Queue<Node> Selection;
+    Queue<Node> sequence;
 
     private Node currentAction;
 
@@ -13,7 +13,7 @@ public class Sequence : Node {
 	new void Start ()
     {
         nodes = new List<Node>();
-        Selection = new Queue<Node>();
+        sequence = new Queue<Node>();
 	}
 	
 	// Update is called once per frame
@@ -21,20 +21,20 @@ public class Sequence : Node {
     {
         currentAction.Update();
 
-        if(currentAction.getState() == nodeState.Success)
+        if (currentAction.getState() == nodeState.Success)
         {
             succeed();
-        }
 
-        if(Selection.Peek() == null)
-        {
-            state = currentAction.getState();
-        }
-        else
-        {
-            currentAction = Selection.Peek();
-            currentAction.initialiseNode(ai);
-            currentAction.Start();
+            if (sequence.Peek() == null)
+            {
+                state = currentAction.getState();
+            }
+            else
+            {
+                currentAction = sequence.Peek();
+                currentAction.initialiseNode(ai);
+                currentAction.Start();
+            }
         }
 	}
     public void addAction(Node action)
@@ -43,13 +43,13 @@ public class Sequence : Node {
     }
     public void initialiseSequence()
     {
-        Selection.Clear();
+        sequence.Clear();
         foreach (Node node in nodes)
         {
-            Selection.Enqueue(node);
+            sequence.Enqueue(node);
         }
 
-        currentAction = Selection.Peek();
+        currentAction = sequence.Peek();
         currentAction.initialiseNode(ai);
         currentAction.Start();
     }

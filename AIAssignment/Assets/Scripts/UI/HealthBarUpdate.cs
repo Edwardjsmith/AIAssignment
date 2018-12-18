@@ -2,7 +2,8 @@
 using UnityEngine.UI;
 
 /// <summary>
-/// Updates the health bar for the AI agent
+/// Updates the health bar for the AI agent, all UI elements store a reference to the
+/// object they are representing and are updated by OnGUI events
 /// </summary>
 public class HealthBarUpdate : MonoBehaviour
 {

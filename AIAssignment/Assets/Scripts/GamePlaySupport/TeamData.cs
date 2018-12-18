@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Used to provide the AI agent spawner with details about the team the AI belongs
+/// to based on the spawning base. This component is attached to the base
+/// </summary>
 public class TeamData : MonoBehaviour
 {
     public GameObject AiAgentPrefab;

@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Shows the powerup status of the AI agent on the UI
+/// </summary>
 public class PowerUpStateIconController : MonoBehaviour
 {
     public Sprite PowerupSprite;
+    // We need this because otherwise a white square is drawn when no object is present
     public Sprite EmptySprite;
 
     private Image _icon;
@@ -17,6 +21,9 @@ public class PowerUpStateIconController : MonoBehaviour
         _icon = GetComponent<Image>();
     }
 
+    /// <summary>
+    /// Update the UI
+    /// </summary>
     private void OnGUI()
     {
         if(_agentData.IsPoweredUp)

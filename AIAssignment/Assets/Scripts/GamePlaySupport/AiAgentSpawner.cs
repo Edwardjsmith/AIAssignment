@@ -2,8 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This component is responsible for respawning AI agents when they've died
+/// The AI agents will respawn 5 seconsd after they've died
+/// </summary>
 public class AiAgentSpawner : MonoBehaviour
 {
+    // Track which AI we've spawned
     public enum AiAgentNumber
     {
         TeamMemberOne,
@@ -13,11 +18,15 @@ public class AiAgentSpawner : MonoBehaviour
 
     public AiAgentNumber ThisAiAgentNumber;
 
+    // The prefab we're spawning from
     private GameObject AiAgentPrefabToSpawn;
     private int RespawnDelay = 5;
 
+    // The new GameObject
     private GameObject _newAiAgent;
     private string _aiAgentName;
+
+    // Used to control the coroutine which actually does the spawning
     private bool _isSpawnScheduled = false;
 
     private TeamData teamData;
@@ -36,6 +45,7 @@ public class AiAgentSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Start to spawn a new AI if it's null
         if (_newAiAgent == null && !_isSpawnScheduled)
         {
             StartCoroutine(SpawnDelay());
@@ -43,6 +53,9 @@ public class AiAgentSpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// The AI agents name is composed of its team name and number
+    /// </summary>
     public void SetAiAgentName()
     {
         _aiAgentName = AiAgentPrefabToSpawn.name;
@@ -61,6 +74,10 @@ public class AiAgentSpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Delay the spawn for a few seconds
+    /// </summary>
+    /// <returns></returns>
     protected IEnumerator SpawnDelay()
     {
         yield return new WaitForSeconds(RespawnDelay);
@@ -69,6 +86,9 @@ public class AiAgentSpawner : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// Spawn the new AI agent
+    /// </summary>
     protected void SpawnObject()
     {
         _newAiAgent = Instantiate(AiAgentPrefabToSpawn, gameObject.transform.position, gameObject.transform.localRotation);
