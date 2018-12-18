@@ -10,21 +10,20 @@ public class Sequence : Node {
     private Node currentAction;
 
 	// Use this for initialization
-	new void Start ()
+	public override void Start ()
     {
         nodes = new List<Node>();
         sequence = new Queue<Node>();
 	}
 	
 	// Update is called once per frame
-	new void Update ()
+	public override void Update ()
     {
         currentAction.Update();
 
         if (currentAction.getState() == nodeState.Success)
         {
             succeed();
-
             if (sequence.Peek() == null)
             {
                 state = currentAction.getState();

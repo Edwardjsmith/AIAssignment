@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class Move : Node
 {
-    bool start;
-
-    action<Vector3> act;
-
-	// Use this for initialization
-	public override void Start ()
+    boolAction<Vector3> act;
+    // Use this for initialization
+    public override void Start ()
     {
         base.Start();
         start = false;
-        act += ai._agentActions.MoveTo;
+        act += ai.getActions().MoveTo;
     }
 	
 	// Update is called once per frame
@@ -22,7 +19,7 @@ public class Move : Node
         base.Update();
         if(getState() != nodeState.Success)
         {
-            act(ai.targetPos);
+            moveTo(ai.getTargetPosition().position);
         }
 	}
 
@@ -35,10 +32,10 @@ public class Move : Node
     {
         if (!start)
         {
-            ai._agentActions.MoveTo(targetPos);
+            act(targetPos);
             start = true;
         }
-        if(ai.gameObject.transform.position == targetPos)
+        if(Vector3.Distance(ai.gameObject.transform.position, targetPos) < 1)
         {
             succeed();
         }

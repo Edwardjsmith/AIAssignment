@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Node{
+public abstract class Node
+{
 
     public enum nodeState { Success, Failure, Running };
 
     protected nodeState state;
     protected AI ai;
 
+    protected bool start;
+    
     public void initialiseNode(AI bot)
     {
         ai = bot;
@@ -29,7 +32,8 @@ public abstract class Node{
         }
 	}
 
-    public delegate bool action<T>(T type);
+    public delegate bool boolAction<T>(T type);
+    public delegate void voidAction<T>(T type);
 
     public abstract void reset();
 
