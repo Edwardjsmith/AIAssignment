@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
+using StateMachine;
 /*****************************************************************************************************************************
  * Write your core AI code in this file here. The private variable 'agentScript' contains all the agents actions which are listed
  * below. Ensure your code it clear and organised and commented.
@@ -90,7 +90,7 @@ public class AI : MonoBehaviour
 
     protected Transform targetPos;
     protected GameObject target;
-
+    public stateMachine<AI> StateMachine { get; set; }
     // Use this for initialization
     public virtual void Start ()
     {
@@ -99,13 +99,46 @@ public class AI : MonoBehaviour
         _agentActions = GetComponent<AgentActions>();
         _agentSenses = GetComponentInChildren<Sensing>();
         _agentInventory = GetComponentInChildren<InventoryController>();
+        StateMachine = new stateMachine<AI>(this);
     }
 
     // Update is called once per frame
     public virtual void Update ()
     {
         // Run your AI code in here
+        StateMachine.Update();
     }
+
+    public virtual void searchForFlag()
+    {
+        
+    }
+
+    public virtual void chase()
+    {
+
+    }
+
+    public virtual void attack()
+    {
+
+    }
+
+    public virtual void flee()
+    {
+
+    }
+
+    public virtual void findHealth()
+    {
+
+    }
+
+    public virtual void runFlagToBase()
+    {
+
+    }
+
 
     public AgentActions getActions()
     {
@@ -135,6 +168,23 @@ public class AI : MonoBehaviour
     public GameObject getTargetObj()
     {
         return target;
+    }
+
+    public GameObject GetClosestObject(List<GameObject> closest)
+    {
+        GameObject tMin = null;
+        float minDist = Mathf.Infinity;
+        Vector3 currentPos = transform.position;
+        foreach (GameObject t in closest)
+        {
+            float dist = Vector3.Distance(t.transform.position, currentPos);
+            if (dist < minDist)
+            {
+                tMin = t;
+                minDist = dist;
+            }
+        }
+        return tMin;
     }
 
 }
