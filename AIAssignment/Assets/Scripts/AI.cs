@@ -90,7 +90,10 @@ public class AI : MonoBehaviour
 
     protected Transform targetPos;
     protected GameObject target;
+    
     public stateMachine<AI> StateMachine { get; set; }
+    public UnityEngine.AI.NavMeshAgent agent;
+
     // Use this for initialization
     public virtual void Start ()
     {
@@ -102,6 +105,7 @@ public class AI : MonoBehaviour
         StateMachine = new stateMachine<AI>(this);
     }
 
+
     // Update is called once per frame
     public virtual void Update ()
     {
@@ -112,6 +116,15 @@ public class AI : MonoBehaviour
     public virtual void searchForFlag()
     {
         
+    }
+    public virtual void saveFlag()
+    {
+
+    }
+
+    public virtual void defendFlag()
+    {
+
     }
 
     public virtual void chase()

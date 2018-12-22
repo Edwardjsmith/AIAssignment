@@ -1,12 +1,14 @@
-﻿using StateMachine;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
-public class attackState : State<AI>
+using StateMachine;
+public class saveFlagState : State<AI>
 {
-    //Make the attack state a singleton to ensure there is only ever one at any time
-    private static attackState _instance;
 
-    private attackState()
+    //Make the attack state a singleton to ensure there is only ever one at any time
+    private static saveFlagState _instance;
+
+    private saveFlagState()
     {
         if (_instance != null)
         {
@@ -16,32 +18,32 @@ public class attackState : State<AI>
         _instance = this; //set instance to this instance if there isn't already an instance
     }
 
-    public static attackState Instance
+    public static saveFlagState Instance
     {
         get
         {
             if (_instance == null)
             {
-                new attackState(); //Create a new instance of attack or return existing
+                new saveFlagState(); //Create a new instance of attack or return existing
             }
 
-            return _instance; 
+            return _instance;
         }
     }
     //End of singleton implementation
 
     public override void EnterState(AI bot)
     {
-        bot.agent.speed = 0;
+
     }
 
     public override void ExitState(AI bot)
     {
-        bot.agent.speed = 5;
+
     }
 
     public override void UpdateState(AI bot)
     {
-        bot.attack();
+        bot.saveFlag();
     }
 }
