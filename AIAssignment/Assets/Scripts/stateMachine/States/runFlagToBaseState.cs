@@ -32,7 +32,8 @@ public class runFlagToBaseState : State<AI>
 
     public override void EnterState(AI bot)
     {
-
+        bot.setTarget(bot.getData().FriendlyBase);
+        bot.getActions().MoveTo(bot.getTargetPosition());
     }
 
     public override void ExitState(AI bot)

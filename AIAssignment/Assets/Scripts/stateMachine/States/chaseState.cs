@@ -34,7 +34,7 @@ public class chaseState : State<AI>
 
     public override void EnterState(AI bot)
     {
-        
+        bot.setTarget(bot.GetClosestObject(bot.getSenses().GetEnemiesInView()));
     }
 
     public override void ExitState(AI bot)

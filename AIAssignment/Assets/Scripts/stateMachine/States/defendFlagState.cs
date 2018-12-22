@@ -33,7 +33,8 @@ public class defendFlagState : State<AI>
 
     public override void EnterState(AI bot)
     {
-
+        bot.getActions().MoveTo(bot.getBase().transform.GetChild(Random.Range(0, 3)).transform.position);
+        bot.setFlagCaptured();
     }
 
     public override void ExitState(AI bot)

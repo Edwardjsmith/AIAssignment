@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using StateMachine;
+
 /*****************************************************************************************************************************
  * Write your core AI code in this file here. The private variable 'agentScript' contains all the agents actions which are listed
  * below. Ensure your code it clear and organised and commented.
@@ -88,11 +90,34 @@ public class AI : MonoBehaviour
     // e.g. agentScript.MoveTo(enemy);
     protected AgentActions _agentActions;
 
-    protected Transform targetPos;
     protected GameObject target;
     
     public stateMachine<AI> StateMachine { get; set; }
     public UnityEngine.AI.NavMeshAgent agent;
+
+    public enum flagToTake { Blue, Red };
+    public flagToTake flag;
+    GameObject enemyFlag;
+    GameObject friendlyFlag;
+
+    public enum myBase { Blue, Red };
+    public myBase baseEnum;
+    protected GameObject Base;
+    protected bool randomPosSet = false;
+
+    protected bool defendFlagPosSet = false;
+
+    public delegate bool queryFlag();
+    public delegate bool setFlag();
+
+    protected static bool blueFlagCaptured;
+    protected static bool redFlagCaptured;
+
+    protected queryFlag flagAtBase;
+    protected setFlag flagtaken;
+
+    protected float fleeTimer = 10.0f;
+    protected GameObject powerup;
 
     // Use this for initialization
     public virtual void Start ()
@@ -103,9 +128,29 @@ public class AI : MonoBehaviour
         _agentSenses = GetComponentInChildren<Sensing>();
         _agentInventory = GetComponentInChildren<InventoryController>();
         StateMachine = new stateMachine<AI>(this);
+
+        StateMachine.transitionToNewState(searchForFlagState.Instance);
+        enemyFlag = GameObject.Find(flag.ToString() + " Flag");
+        friendlyFlag = GameObject.Find(getData().FriendlyFlagName);
+        Base = GameObject.Find(baseEnum.ToString() + " Base");
+        agent = GetComponent<NavMeshAgent>();
+        powerup = GameObject.Find("Power Up");
+
+        flagAtBase += enemyFlagAtBase;
     }
 
-
+    public GameObject getPowerUp()
+    {
+        return powerup;
+    }
+    public GameObject getEnemyFlagObj()
+    {
+        return enemyFlag;
+    }
+    public GameObject getFirendlyFlagObj()
+    {
+        return friendlyFlag;
+    }
     // Update is called once per frame
     public virtual void Update ()
     {
@@ -113,7 +158,7 @@ public class AI : MonoBehaviour
         StateMachine.Update();
     }
 
-    public virtual void searchForFlag()
+    public virtual void idleState()
     {
         
     }
@@ -123,6 +168,16 @@ public class AI : MonoBehaviour
     }
 
     public virtual void defendFlag()
+    {
+
+    }
+
+    public virtual void pickupFlag()
+    {
+
+    }
+
+    public virtual void pickupItem()
     {
 
     }
@@ -152,6 +207,10 @@ public class AI : MonoBehaviour
 
     }
 
+    public GameObject getBase()
+    {
+        return Base;
+    }
 
     public AgentActions getActions()
     {
@@ -173,14 +232,19 @@ public class AI : MonoBehaviour
         return _agentSenses;
     }
 
-    public Transform getTargetPosition()
+    public Vector3 getTargetPosition()
     {
-        return targetPos;
+        return target.transform.position;
     }
 
     public GameObject getTargetObj()
     {
         return target;
+    }
+
+    public void setTarget(GameObject targ)
+    {
+        target = targ;
     }
 
     public GameObject GetClosestObject(List<GameObject> closest)
@@ -200,4 +264,67 @@ public class AI : MonoBehaviour
         return tMin;
     }
 
+    public bool setFlagCaptured()
+    {
+        if (baseEnum == myBase.Blue)
+        {
+            if (Vector3.Distance(enemyFlag.transform.position, Base.transform.position) < 5)
+            {
+                return redFlagCaptured = true;
+            }
+            else
+            {
+                return redFlagCaptured = false;
+            }
+        }
+        else
+        {
+            if (Vector3.Distance(enemyFlag.transform.position, Base.transform.position) < 5)
+            {
+                return blueFlagCaptured = true;
+            }
+            else
+            {
+                return blueFlagCaptured = false;
+            }
+        }
+    }
+
+    protected bool flagSaved()
+    {
+        if (baseEnum == myBase.Blue)
+        {
+            if (Vector3.Distance(friendlyFlag.transform.position, Base.transform.position) < 5)
+            {
+                return redFlagCaptured = false;
+            }
+            else
+            {
+                return redFlagCaptured = true;
+            }
+        }
+        else
+        {
+            if (Vector3.Distance(friendlyFlag.transform.position, Base.transform.position) < 5)
+            {
+                return blueFlagCaptured = false;
+            }
+            else
+            {
+                return blueFlagCaptured = true;
+            }
+        }
+    }
+
+    public bool enemyFlagAtBase()
+    {
+        if (baseEnum == myBase.Blue)
+        {
+            return redFlagCaptured;
+        }
+        else
+        {
+            return blueFlagCaptured;
+        }
+    }
 }

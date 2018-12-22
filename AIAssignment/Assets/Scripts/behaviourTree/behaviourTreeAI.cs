@@ -22,7 +22,7 @@ public class behaviourTreeAI : AI
         base.Start();
 
         target = enemy;
-        targetPos = target.transform;
+
 
         move = new Move();
         attackEnemy = new Attack();

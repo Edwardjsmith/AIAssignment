@@ -19,7 +19,7 @@ public class Move : Node
         base.Update();
         if(getState() != nodeState.Success)
         {
-            moveTo(ai.getTargetPosition().position);
+            moveTo(ai.getTargetPosition());
         }
 	}
 

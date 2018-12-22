@@ -30,9 +30,11 @@ public class searchForFlagState : State<AI>
     }
     //End of singleton implementation
 
+    float radius = 5.0f;
     public override void EnterState(AI bot)
-    { 
-
+    {
+        Vector3 offset = Random.insideUnitCircle * radius;
+        bot.getActions().MoveTo(bot.getEnemyFlagObj());
     }
 
     public override void ExitState(AI bot)
@@ -42,6 +44,6 @@ public class searchForFlagState : State<AI>
 
     public override void UpdateState(AI bot)
     {
-        bot.searchForFlag();
+        bot.idleState();
     }
 }
