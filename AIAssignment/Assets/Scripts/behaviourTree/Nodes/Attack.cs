@@ -20,6 +20,7 @@ public class Attack : Node {
         if (getState() != nodeState.Success)
         {
             attack(ai.getTargetObj());
+            Debug.Log("Attack successful");
         }
     }
 

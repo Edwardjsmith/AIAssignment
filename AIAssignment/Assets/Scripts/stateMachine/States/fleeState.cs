@@ -31,7 +31,7 @@ public class fleeState: State<AI>
 
     public override void EnterState(AI bot)
     {
-
+        bot.getActions().Flee(bot.getTargetObj());
     }
 
     public override void ExitState(AI bot)

@@ -19,11 +19,7 @@ public class behaviourTreeAI : AI
 	// Use this for initialization
 	public override void Start ()
     {
-        base.Start();
-
         target = enemy;
-
-
         move = new Move();
         attackEnemy = new Attack();
 
@@ -41,7 +37,6 @@ public class behaviourTreeAI : AI
 	// Update is called once per frame
 	public override void Update ()
     {
-        base.Update();
         moveAndAttack.Update();
 	}
 }

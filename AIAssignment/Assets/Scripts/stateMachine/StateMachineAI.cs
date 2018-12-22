@@ -169,21 +169,23 @@ public class StateMachineAI : AI
 
     public override void flee()
     {
-        base.flee();
-        if (target != null)
-        { 
-            if (fleeTimer > 0)
-            {
-                getActions().Flee(target);
-                fleeTimer -= Time.deltaTime;
-            }
+        if (fleeTimer > 0)
+        {
+            fleeTimer -= Time.deltaTime;
         }
         else
         {
             fleeTimer = 10.0f;
-            StateMachine.transitionToNewState(findHealthState.Instance);
-        }
 
+            if (getData().CurrentHitPoints < getData().CurrentHitPoints / 2)
+            {
+                StateMachine.transitionToNewState(findHealthState.Instance);
+            }
+            else
+            {
+                StateMachine.transitionToNewState(searchForFlagState.Instance);
+            }
+        }
     }
 
     public override void saveFlag()

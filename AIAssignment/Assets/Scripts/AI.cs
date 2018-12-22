@@ -129,7 +129,7 @@ public class AI : MonoBehaviour
         _agentInventory = GetComponentInChildren<InventoryController>();
         StateMachine = new stateMachine<AI>(this);
 
-        StateMachine.transitionToNewState(searchForFlagState.Instance);
+        
         enemyFlag = GameObject.Find(flag.ToString() + " Flag");
         friendlyFlag = GameObject.Find(getData().FriendlyFlagName);
         Base = GameObject.Find(baseEnum.ToString() + " Base");
@@ -137,6 +137,8 @@ public class AI : MonoBehaviour
         powerup = GameObject.Find("Power Up");
 
         flagAtBase += enemyFlagAtBase;
+
+        StateMachine.transitionToNewState(searchForFlagState.Instance);
     }
 
     public GameObject getPowerUp()
