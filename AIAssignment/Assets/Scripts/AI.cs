@@ -93,7 +93,7 @@ public class AI : MonoBehaviour
     protected GameObject target;
     
     public stateMachine<AI> StateMachine { get; set; }
-    public UnityEngine.AI.NavMeshAgent agent;
+    public NavMeshAgent agent;
 
     public enum flagToTake { Blue, Red };
     public flagToTake flag;

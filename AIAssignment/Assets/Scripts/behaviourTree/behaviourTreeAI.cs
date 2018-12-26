@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using BehaviourTree;
 
-public class behaviourTreeAI : AI
+/*public class behaviourTreeAI : AI
 {
     public GameObject enemy;
 
@@ -41,3 +41,4 @@ public class behaviourTreeAI : AI
         moveAndAttack.Update();
 	}
 }
+*/

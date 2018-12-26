@@ -3,25 +3,142 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace DecisionTree
+namespace Decisiontree
 {
 
     struct delegates
     {
-        public delegate bool decision(AI bot);
+        public delegate bool decision (AI bot);
         public delegate bool action(AI bot);
     }
    class Actions
     {
         public static bool Move(AI bot)
         {
-            return bot.getActions().MoveTo(bot.getEnemyFlagObj());
+            return bot.getActions().MoveTo(bot.getTargetObj());
+        }
+
+        public static bool Attack(AI bot)
+        {
+            bot.getActions().AttackEnemy(bot.getTargetObj());
+            return true;
+        }
+
+        public static bool dropFlag(AI bot)
+        {
+            if(bot.GetInventory().HasItem(bot.getEnemyFlagObj().name))
+            {
+                bot.getActions().DropAllItems();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool pickUpFlag(AI bot)
+        {
+            bot.getActions().CollectItem(bot.getEnemyFlagObj());
+            return true;
+        }
+
+        public static bool useItem(AI bot)
+        {
+            bot.getActions().UseItem(bot.getTargetObj());
+            return true;
         }
     }
 
     class Decisions
     {
+        public static bool ItemInRange(AI bot)
+        {
+            if (Vector3.Distance(bot.transform.position, bot.getTargetObj().transform.position) <= bot.getData().PickUpRange)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
+        public static bool checkHealth(AI bot)
+        {
+            if (bot.getData().CurrentHitPoints > bot.getData().CurrentHitPoints / 2)
+            {
+                return true;
+            }
+            else
+            {
+                bot.setTarget(GameObject.Find("Health Kit"));
+                return false;
+            }
+        }
+
+        public static bool haveItem(AI bot)
+        {
+            if(bot.GetInventory().HasItem(bot.getTargetObj().name))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool inAttackRange(AI bot)
+        {
+            if (Vector3.Distance(bot.transform.position, bot.getTargetObj().transform.position) <= bot.getData().AttackRange)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool enemySeen(AI bot)
+        {
+            if (bot.getSenses().GetEnemiesInView() != null)
+            {
+                bot.setTarget(bot.GetClosestObject(bot.getSenses().GetEnemiesInView()));
+                return true;
+            }
+            else
+            {
+                bot.setTarget(bot.getEnemyFlagObj());
+                return false;
+            }
+        }
+
+        public static bool checkForItem(AI bot)
+        {
+            if (bot.GetInventory().HasItem(bot.getTargetObj().name))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool atBase(AI bot)
+        {
+            if(Vector3.Distance(bot.transform.position, bot.getBase().transform.position) > 1)
+            {
+                bot.setTarget(bot.getBase());
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 
     class Node
@@ -55,12 +172,22 @@ namespace DecisionTree
 
         delegates.decision _decision;
 
-        decisionNode(decisionTreeAI bot, delegates.decision decision) : base(bot)
+        public decisionNode(decisionTreeAI bot, delegates.decision decision) : base(bot)
         {
             _isLeaf = false;
             yes = null;
             no = null;
             _decision = decision;
+        }
+
+        public void addYesChild(Node child)
+        {
+            yes = child;
+        }
+
+        public void addNoChild(Node child)
+        {
+            no = child;
         }
 
         public override Node makeDecision()
@@ -80,7 +207,7 @@ namespace DecisionTree
     {
         delegates.action _action;
 
-        actionNode(decisionTreeAI bot, delegates.action Action) : base(bot)
+        public actionNode(decisionTreeAI bot, delegates.action Action) : base(bot)
         {
             _isLeaf = true;
             _action = Action;
