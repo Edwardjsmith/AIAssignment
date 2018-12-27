@@ -1,7 +1,7 @@
 ﻿using StateMachine;
 using UnityEngine;
 
-public class attackState : State<AI>
+public class attackState : State<StateMachineAI>
 {
     //Make the attack state a singleton to ensure there is only ever one at any time
     private static attackState _instance;
@@ -30,17 +30,17 @@ public class attackState : State<AI>
     }
     //End of singleton implementation
 
-    public override void EnterState(AI bot)
+    public override void EnterState(StateMachineAI bot)
     {
         bot.agent.speed = 0;
     }
 
-    public override void ExitState(AI bot)
+    public override void ExitState(StateMachineAI bot)
     {
         bot.agent.speed = 5;
     }
 
-    public override void UpdateState(AI bot)
+    public override void UpdateState(StateMachineAI bot)
     {
         bot.attack();
     }

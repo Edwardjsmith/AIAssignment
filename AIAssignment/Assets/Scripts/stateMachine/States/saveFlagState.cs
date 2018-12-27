@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using StateMachine;
-public class saveFlagState : State<AI>
+public class saveFlagState : State<StateMachineAI>
 {
 
     //Make the attack state a singleton to ensure there is only ever one at any time
@@ -32,18 +32,18 @@ public class saveFlagState : State<AI>
     }
     //End of singleton implementation
 
-    public override void EnterState(AI bot)
+    public override void EnterState(StateMachineAI bot)
     {
         bot.setTarget(bot.getFirendlyFlagObj());
         bot.getActions().MoveTo(bot.getTargetPosition());
     }
 
-    public override void ExitState(AI bot)
+    public override void ExitState(StateMachineAI bot)
     {
 
     }
 
-    public override void UpdateState(AI bot)
+    public override void UpdateState(StateMachineAI bot)
     {
         bot.saveFlag();
     }

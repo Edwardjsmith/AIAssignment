@@ -1,25 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using StateMachine;
 
 
 public class StateMachineAI : AI
 {
-
+    stateMachine<StateMachineAI> StateMachine { get; set; }
     // Use this for initialization
     public override void Start ()
     {
         base.Start();
+        StateMachine = new stateMachine<StateMachineAI>(this);
+        StateMachine.transitionToNewState(searchForFlagState.Instance);
     }
 	
 	// Update is called once per frame
 	public override void Update ()
     {
-        base.Update();
-	}
+        StateMachine.Update();
+    }
 
-    public override void idleState()
+    public void idleState()
     {
         if (getSenses().GetEnemiesInView() != null)
         {
@@ -54,7 +56,7 @@ public class StateMachineAI : AI
         }
     }
 
-    public override void pickupFlag()
+    public void pickupFlag()
     {
         if (getSenses().IsItemInReach(target))
         {
@@ -62,7 +64,7 @@ public class StateMachineAI : AI
             StateMachine.transitionToNewState(runFlagToBaseState.Instance);
         }
     }
-    public override void pickupItem()
+    public void pickupItem()
     {
         if (getSenses().IsItemInReach(target))
         {
@@ -70,7 +72,7 @@ public class StateMachineAI : AI
             StateMachine.transitionToNewState(searchForFlagState.Instance);
         }
     }
-    public override void attack()
+    public void attack()
     {
         if (getTargetObj() != null)
         {
@@ -98,7 +100,7 @@ public class StateMachineAI : AI
         }
     }
 
-    public override void chase()
+    public void chase()
     {
         if (target == null)
         {
@@ -107,9 +109,9 @@ public class StateMachineAI : AI
         else
         {
             getActions().MoveTo(target);
-            if(powerup != null && GetInventory().HasItem(powerup.name))
+            if(getPowerUp() != null && GetInventory().HasItem(getPowerUp().name))
             {
-                getActions().UseItem(powerup);
+                getActions().UseItem(getPowerUp());
             }
             
             if (Vector3.Distance(transform.position, getTargetObj().transform.position) <= getData().AttackRange)
@@ -120,7 +122,7 @@ public class StateMachineAI : AI
 
     }
 
-    public override void findHealth()
+    public void findHealth()
     {
 
         if (getTargetObj() == null)
@@ -149,7 +151,7 @@ public class StateMachineAI : AI
         }
     }
 
-    public override void runFlagToBase()
+    public void runFlagToBase()
     {
         if(Vector3.Distance(transform.position, target.transform.position) < 5)
         {
@@ -167,7 +169,7 @@ public class StateMachineAI : AI
     }
 
 
-    public override void flee()
+    public void flee()
     {
         if (fleeTimer > 0)
         {
@@ -188,7 +190,7 @@ public class StateMachineAI : AI
         }
     }
 
-    public override void saveFlag()
+    public void saveFlag()
     {
         if (getSenses().IsItemInReach(target))
         { 
@@ -200,7 +202,7 @@ public class StateMachineAI : AI
             StateMachine.transitionToNewState(chaseState.Instance);
         }
     }
-    public override void defendFlag()
+    public void defendFlag()
     {
         if (getSenses().GetEnemiesInView() != null)
         {

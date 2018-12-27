@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using StateMachine;
 
-public class findHealthState : State<AI>
+public class findHealthState : State<StateMachineAI>
 {
     //Make the attack state a singleton to ensure there is only ever one at any time
     private static findHealthState _instance;
@@ -30,17 +30,17 @@ public class findHealthState : State<AI>
     }
     //End of singleton implementation
 
-    public override void EnterState(AI bot)
+    public override void EnterState(StateMachineAI bot)
     {
 
     }
 
-    public override void ExitState(AI bot)
+    public override void ExitState(StateMachineAI bot)
     {
 
     }
 
-    public override void UpdateState(AI bot)
+    public override void UpdateState(StateMachineAI bot)
     {
         bot.findHealth();
     }

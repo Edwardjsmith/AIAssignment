@@ -5,30 +5,38 @@ using System;
 
 namespace Decisiontree
 {
-
     struct delegates
     {
-        public delegate bool decision (AI bot);
-        public delegate bool action(AI bot);
+        public delegate bool decision (decisionTreeAI bot);
+        public delegate bool gameObjectDecision(decisionTreeAI bot, GameObject obj);
+
+        public delegate bool action(decisionTreeAI bot);
+        public delegate bool gameObjectAction(decisionTreeAI bot, GameObject obj);
+
     }
    class Actions
     {
-        public static bool Move(AI bot)
+        public static bool Move(decisionTreeAI bot, GameObject target)
         {
-            return bot.getActions().MoveTo(bot.getTargetObj());
+            Debug.Log(target);
+            return bot.getActions().MoveTo(target); 
         }
 
-        public static bool Attack(AI bot)
+        public static bool Attack(decisionTreeAI bot)
         {
             bot.getActions().AttackEnemy(bot.getTargetObj());
             return true;
         }
 
-        public static bool dropFlag(AI bot)
+        public static bool dropItem(decisionTreeAI bot, GameObject item)
         {
-            if(bot.GetInventory().HasItem(bot.getEnemyFlagObj().name))
+            if(bot.GetInventory().HasItem(item.name))
             {
-                bot.getActions().DropAllItems();
+                bot.getActions().DropItem(item);
+                if(item == bot.getEnemyFlagObj())
+                {
+                    bot.setFlagCaptured();
+                }
                 return true;
             }
             else
@@ -37,24 +45,28 @@ namespace Decisiontree
             }
         }
 
-        public static bool pickUpFlag(AI bot)
+        public static bool pickUpItem(decisionTreeAI bot, GameObject item)
         {
-            bot.getActions().CollectItem(bot.getEnemyFlagObj());
+            bot.getActions().CollectItem(item);
             return true;
         }
 
-        public static bool useItem(AI bot)
+        public static bool useItem(decisionTreeAI bot, GameObject item)
         {
-            bot.getActions().UseItem(bot.getTargetObj());
+            bot.getActions().UseItem(item);
             return true;
         }
     }
 
     class Decisions
     {
-        public static bool ItemInRange(AI bot)
+        public static bool isEnemyFlagCaptured(decisionTreeAI bot)
         {
-            if (Vector3.Distance(bot.transform.position, bot.getTargetObj().transform.position) <= bot.getData().PickUpRange)
+            return bot.enemyFlagAtBase();
+        }
+        public static bool ItemInRange(decisionTreeAI bot, GameObject item)
+        {
+            if (Vector3.Distance(bot.transform.position, item.transform.position) <= bot.getData().PickUpRange)
             {
                 return true;
             }
@@ -64,22 +76,22 @@ namespace Decisiontree
             }
         }
 
-        public static bool checkHealth(AI bot)
+        public static bool checkHealth(decisionTreeAI bot)
         {
             if (bot.getData().CurrentHitPoints > bot.getData().CurrentHitPoints / 2)
             {
+                
                 return true;
             }
             else
             {
-                bot.setTarget(GameObject.Find("Health Kit"));
                 return false;
             }
         }
 
-        public static bool haveItem(AI bot)
+        public static bool haveItem(decisionTreeAI bot, GameObject item)
         {
-            if(bot.GetInventory().HasItem(bot.getTargetObj().name))
+            if(bot.GetInventory().HasItem(item.name))
             {
                 return true;
             }
@@ -89,9 +101,9 @@ namespace Decisiontree
             }
         }
 
-        public static bool inAttackRange(AI bot)
+        public static bool inAttackRange(decisionTreeAI bot)
         {
-            if (Vector3.Distance(bot.transform.position, bot.getTargetObj().transform.position) <= bot.getData().AttackRange)
+            if (Vector3.Distance(bot.transform.position, bot.nearestEnemy.transform.position) <= bot.getData().AttackRange)
             {
                 return true;
             }
@@ -101,25 +113,20 @@ namespace Decisiontree
             }
         }
 
-        public static bool enemySeen(AI bot)
+        public static bool enemySeen(decisionTreeAI bot)
         {
             if (bot.getSenses().GetEnemiesInView() != null)
             {
-                bot.setTarget(bot.GetClosestObject(bot.getSenses().GetEnemiesInView()));
-                return true;
-            }
-            else
-            {
-                bot.setTarget(bot.getEnemyFlagObj());
-                return false;
-            }
-        }
+                bot.setTarget(bot.nearestEnemy);
 
-        public static bool checkForItem(AI bot)
-        {
-            if (bot.GetInventory().HasItem(bot.getTargetObj().name))
-            {
-                return true;
+                if (bot.getTargetObj() != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -127,16 +134,15 @@ namespace Decisiontree
             }
         }
 
-        public static bool atBase(AI bot)
+        public static bool atBase(decisionTreeAI bot)
         {
-            if(Vector3.Distance(bot.transform.position, bot.getBase().transform.position) > 1)
+            if(Vector3.Distance(bot.transform.position, bot.getBase().transform.position) < 5)
             {
-                bot.setTarget(bot.getBase());
-                return false;
+                return true;
             }
             else
             {
-                return true;
+                return false;
             }
         }
     }
@@ -167,8 +173,8 @@ namespace Decisiontree
     
     class decisionNode : Node
     {
-        Node yes;
-        Node no;
+        protected Node yes;
+        protected Node no;
 
         delegates.decision _decision;
 
@@ -203,19 +209,60 @@ namespace Decisiontree
         }
     }
 
+    class gameObjectDecisonNode : decisionNode
+    {
+        delegates.gameObjectDecision _decision;
+        GameObject _obj;
+
+        public gameObjectDecisonNode(decisionTreeAI bot, delegates.gameObjectDecision decision, GameObject obj) : base(bot, null)
+        {
+            _decision = decision;
+            _obj = obj;
+        }
+
+        public override Node makeDecision()
+        {
+            if (_decision.Invoke(AI, _obj))
+            {
+                return yes;
+            }
+            else
+            {
+                return no;
+            }
+        }
+    }
+
     class actionNode : Node
     {
         delegates.action _action;
 
-        public actionNode(decisionTreeAI bot, delegates.action Action) : base(bot)
+        public actionNode(decisionTreeAI bot, delegates.action action) : base(bot)
         {
             _isLeaf = true;
-            _action = Action;
+            _action = action;
         }
 
         public override void executeAction()
         {
             _action.Invoke(AI);
+        }
+    }
+
+    class gameObjectActionNode : actionNode
+    {
+        delegates.gameObjectAction _action;
+        GameObject _obj;
+
+        public gameObjectActionNode(decisionTreeAI bot, delegates.gameObjectAction action, GameObject obj) : base(bot, null)
+        {
+            _action = action;
+            _obj = obj;
+        }
+
+        public override void executeAction()
+        {
+            _action.Invoke(AI, _obj);
         }
     }
 

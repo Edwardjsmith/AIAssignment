@@ -1,78 +1,96 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Decisiontree;
 using UnityEngine;
-using Decisiontree;
 
 public class decisionTreeAI : AI {
 
-    DecisionTree dtTree;
+    DecisionTree decisionTree;
+
+    public GameObject nearestEnemy;
+
 	// Use this for initialization
 	public override void Start ()
     {
         base.Start();
+
+        delegates.decision isEnemyFlagAtFriendlyBase = new delegates.decision(Decisions.isEnemyFlagCaptured);
         delegates.decision enemyNear = new delegates.decision(Decisions.enemySeen);
-        delegates.decision checkForFlag = new delegates.decision(Decisions.checkForItem);
+        delegates.gameObjectDecision CheckForEnemyFlag = new delegates.gameObjectDecision(Decisions.haveItem);
         delegates.decision atbase = new delegates.decision(Decisions.atBase);
-        delegates.decision itemWithinRange = new delegates.decision(Decisions.ItemInRange);
+        delegates.gameObjectDecision itemWithinRange = new delegates.gameObjectDecision(Decisions.ItemInRange);
         delegates.decision inAttackRange = new delegates.decision(Decisions.inAttackRange);
         delegates.decision checkhealth = new delegates.decision(Decisions.checkHealth);
 
 
-        delegates.action moveTo = new delegates.action(Actions.Move);
+        delegates.gameObjectAction moveTo = new delegates.gameObjectAction(Actions.Move);
         delegates.action attack = new delegates.action(Actions.Attack);
-        delegates.action dropflag = new delegates.action(Actions.dropFlag);
-        delegates.action pickupflag = new delegates.action(Actions.pickUpFlag);
-        delegates.action useitem = new delegates.action(Actions.useItem);
+        delegates.gameObjectAction dropflag = new delegates.gameObjectAction(Actions.dropItem);
+        delegates.gameObjectAction pickupflag = new delegates.gameObjectAction(Actions.pickUpItem);
+        delegates.gameObjectAction useitem = new delegates.gameObjectAction(Actions.useItem);
 
+        decisionNode isEnemyFlagAtBase = new decisionNode(this, isEnemyFlagAtFriendlyBase);
         decisionNode isEnemyNear = new decisionNode(this, enemyNear);
-
-        decisionNode checkFlag = new decisionNode(this, checkForFlag);
-        decisionNode isAtBase = new decisionNode(this, atbase);
-        decisionNode isFlagInRange = new decisionNode(this, itemWithinRange);
+        gameObjectDecisonNode checkEnemyFlag = new gameObjectDecisonNode(this, CheckForEnemyFlag, getEnemyFlagObj());
+        decisionNode amIAtBase = new decisionNode(this, atbase);
+        gameObjectDecisonNode isFlagInRange = new gameObjectDecisonNode(this, itemWithinRange, getEnemyFlagObj());
         decisionNode isInAttackRange = new decisionNode(this, inAttackRange);
         decisionNode checkMyHealth = new decisionNode(this, checkhealth);
 
-        actionNode makeMove = new actionNode(this, moveTo);
+        gameObjectActionNode makeMoveToFlag = new gameObjectActionNode(this, moveTo, getEnemyFlagObj());
+        gameObjectActionNode makeMoveToBase = new gameObjectActionNode(this, moveTo, Base);
+        gameObjectActionNode makeMoveToDefend = new gameObjectActionNode(this, moveTo, defenceObject);
+        gameObjectActionNode makeMoveToEnemy = new gameObjectActionNode(this, moveTo, nearestEnemy);
+
         actionNode attackEnemy = new actionNode(this, attack);
-        actionNode dropThisFlag = new actionNode(this, dropflag);
-        actionNode pickupthisflag = new actionNode(this, pickupflag);
-        actionNode useThisitem = new actionNode(this, useitem);
+        gameObjectActionNode dropThisFlag = new gameObjectActionNode(this, dropflag, getEnemyFlagObj());
+        gameObjectActionNode pickupthisflag = new gameObjectActionNode(this, pickupflag, getEnemyFlagObj());
+        gameObjectActionNode useThisitem = new gameObjectActionNode(this, useitem, getTargetObj());
 
-        isFlagInRange.addNoChild(makeMove);
-        isFlagInRange.addYesChild(useThisitem);
-
-        isAtBase.addNoChild(makeMove);
-        isAtBase.addYesChild(dropThisFlag);
-
-        checkFlag.addNoChild(isFlagInRange);
-        checkFlag.addYesChild(isAtBase);
-
-        isFlagInRange.addNoChild(makeMove);
-        isFlagInRange.addYesChild(pickupthisflag);
-
-        checkFlag.addNoChild(isFlagInRange);
-        checkFlag.addYesChild(useThisitem);
-
-        //Checks for health kit or moves to enemy
-        checkMyHealth.addNoChild(checkFlag);
-        checkMyHealth.addYesChild(makeMove);
+        /*isEnemyNear.addYesChild(isInAttackRange);
+        isEnemyNear.addNoChild(checkFlag);
 
         isInAttackRange.addYesChild(attackEnemy);
         isInAttackRange.addNoChild(checkMyHealth);
 
+        checkMyHealth.addYesChild(makeMove);
+        //Need to implement health kit search here
+
+        checkFlag.addYesChild(isAtBase);
+        checkFlag.addNoChild(isFlagInRange);
+
+        isAtBase.addYesChild(dropThisFlag);
+        isAtBase.addNoChild(makeMove);
+
+        isFlagInRange.addYesChild(pickupthisflag);
+        isFlagInRange.addNoChild(makeMove);*/
+
+        isEnemyNear.addNoChild(isEnemyFlagAtBase);
         isEnemyNear.addYesChild(isInAttackRange);
-        isEnemyNear.addNoChild(checkFlag);
 
-        
+        isInAttackRange.addYesChild(attackEnemy);
+        isInAttackRange.addNoChild(makeMoveToEnemy);
 
+        isEnemyFlagAtBase.addNoChild(checkEnemyFlag);
+        isEnemyFlagAtBase.addYesChild(makeMoveToDefend);
 
+        checkEnemyFlag.addYesChild(amIAtBase);
+        amIAtBase.addYesChild(dropThisFlag);
+        amIAtBase.addNoChild(makeMoveToBase);
 
-        dtTree = new DecisionTree(isEnemyNear);
+        checkEnemyFlag.addNoChild(isFlagInRange);
+        isFlagInRange.addYesChild(pickupthisflag);
+        isFlagInRange.addNoChild(makeMoveToFlag);
+
+        decisionTree = new DecisionTree(isEnemyNear);
     }
 	
 	// Update is called once per frame
 	public override void Update ()
     {
-        dtTree.executeAction();
+        if(getSenses().GetEnemiesInView() != null)
+        {
+            nearestEnemy = GetClosestObject(getSenses().GetEnemiesInView());
+        }
+
+        decisionTree.executeAction();
 	}
 }

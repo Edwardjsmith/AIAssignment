@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using StateMachine;
+
 
 /*****************************************************************************************************************************
  * Write your core AI code in this file here. The private variable 'agentScript' contains all the agents actions which are listed
@@ -92,13 +92,12 @@ public class AI : MonoBehaviour
 
     protected GameObject target;
     
-    public stateMachine<AI> StateMachine { get; set; }
+
     public NavMeshAgent agent;
 
     public enum flagToTake { Blue, Red };
     public flagToTake flag;
-    GameObject enemyFlag;
-    GameObject friendlyFlag;
+   
 
     public enum myBase { Blue, Red };
     public myBase baseEnum;
@@ -117,7 +116,14 @@ public class AI : MonoBehaviour
     protected setFlag flagtaken;
 
     protected float fleeTimer = 10.0f;
-    protected GameObject powerup;
+
+    GameObject enemyFlag;
+    GameObject friendlyFlag;
+    GameObject powerup;
+    GameObject health;
+
+    Vector3 defencePoint;
+    protected GameObject defenceObject;
 
     // Use this for initialization
     public virtual void Start ()
@@ -127,23 +133,34 @@ public class AI : MonoBehaviour
         _agentActions = GetComponent<AgentActions>();
         _agentSenses = GetComponentInChildren<Sensing>();
         _agentInventory = GetComponentInChildren<InventoryController>();
-        StateMachine = new stateMachine<AI>(this);
 
-        
         enemyFlag = GameObject.Find(flag.ToString() + " Flag");
         friendlyFlag = GameObject.Find(getData().FriendlyFlagName);
         Base = GameObject.Find(baseEnum.ToString() + " Base");
         agent = GetComponent<NavMeshAgent>();
         powerup = GameObject.Find("Power Up");
+        health = GameObject.Find("Health Kit");
 
         flagAtBase += enemyFlagAtBase;
 
-        StateMachine.transitionToNewState(searchForFlagState.Instance);
+        defencePoint = transform.position;
+        defenceObject = new GameObject();
+        defenceObject.transform.position = defencePoint;
     }
+
+    public virtual void Update()
+    {
+        // Run your AI code in here
+    }
+
 
     public GameObject getPowerUp()
     {
         return powerup;
+    }
+    public GameObject getHealthKit()
+    {
+        return health;
     }
     public GameObject getEnemyFlagObj()
     {
@@ -154,60 +171,6 @@ public class AI : MonoBehaviour
         return friendlyFlag;
     }
     // Update is called once per frame
-    public virtual void Update ()
-    {
-        // Run your AI code in here
-        StateMachine.Update();
-    }
-
-    public virtual void idleState()
-    {
-        
-    }
-    public virtual void saveFlag()
-    {
-
-    }
-
-    public virtual void defendFlag()
-    {
-
-    }
-
-    public virtual void pickupFlag()
-    {
-
-    }
-
-    public virtual void pickupItem()
-    {
-
-    }
-
-    public virtual void chase()
-    {
-
-    }
-
-    public virtual void attack()
-    {
-
-    }
-
-    public virtual void flee()
-    {
-
-    }
-
-    public virtual void findHealth()
-    {
-
-    }
-
-    public virtual void runFlagToBase()
-    {
-
-    }
 
     public GameObject getBase()
     {

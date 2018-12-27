@@ -3,7 +3,7 @@
 using UnityEngine;
 using StateMachine;
 
-public class pickupItemState : State<AI>
+public class pickupItemState : State<StateMachineAI>
 {
 
     //Make the attack state a singleton to ensure there is only ever one at any time
@@ -33,18 +33,18 @@ public class pickupItemState : State<AI>
     }
     //End of singleton implementation
 
-    public override void EnterState(AI bot)
+    public override void EnterState(StateMachineAI bot)
     {
         bot.setTarget(bot.getPowerUp());
         bot.getActions().MoveTo(bot.getTargetPosition());
     }
 
-    public override void ExitState(AI bot)
+    public override void ExitState(StateMachineAI bot)
     {
 
     }
 
-    public override void UpdateState(AI bot)
+    public override void UpdateState(StateMachineAI bot)
     {
         bot.pickupItem();
     }

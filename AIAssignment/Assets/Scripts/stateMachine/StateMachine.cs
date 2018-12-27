@@ -1,12 +1,12 @@
 ﻿
 namespace StateMachine
 {
-    public class stateMachine<AI> //Could easily be set to take a type T for extra flexibility but since all of my scripts will derive from AI, I can be explicit
+    public class stateMachine<StateMachineAI> //Could easily be set to take a type T for extra flexibility but since all of my scripts will derive from AI, I can be explicit
     {
-        public State<AI> currentState { get; set; } //Used to store, check and set current state
-        public AI ai; 
+        public State<StateMachineAI> currentState { get; set; } //Used to store, check and set current state
+        public StateMachineAI ai; 
 
-        public stateMachine(AI bot)
+        public stateMachine(StateMachineAI bot)
         {
             ai = bot; //reference the AI that this statemachine applies to
             currentState = null; //set initial state to null ready to be set again later
@@ -20,7 +20,7 @@ namespace StateMachine
             }
         }
 
-        public void transitionToNewState(State<AI> nextState)
+        public void transitionToNewState(State<StateMachineAI> nextState)
         {
             if(currentState != null)
             {
@@ -33,10 +33,10 @@ namespace StateMachine
         }
     }
 
-    public abstract class State<AI>
+    public abstract class State<StateMachineAI>
     {
-        public abstract void EnterState(AI bot);
-        public abstract void ExitState(AI bot);
-        public abstract void UpdateState(AI bot);
+        public abstract void EnterState(StateMachineAI bot);
+        public abstract void ExitState(StateMachineAI bot);
+        public abstract void UpdateState(StateMachineAI bot);
     }
 }

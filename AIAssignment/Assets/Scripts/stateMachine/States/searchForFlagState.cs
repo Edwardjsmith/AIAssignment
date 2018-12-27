@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using StateMachine;
 
-public class searchForFlagState : State<AI>
+public class searchForFlagState : State<StateMachineAI>
 {
     //Make the attack state a singleton to ensure there is only ever one at any time
     private static searchForFlagState _instance;
@@ -30,17 +30,17 @@ public class searchForFlagState : State<AI>
     }
     //End of singleton implementation
 
-    public override void EnterState(AI bot)
+    public override void EnterState(StateMachineAI bot)
     {
         bot.getActions().MoveTo(bot.getEnemyFlagObj());
     }
 
-    public override void ExitState(AI bot)
+    public override void ExitState(StateMachineAI bot)
     {
 
     }
 
-    public override void UpdateState(AI bot)
+    public override void UpdateState(StateMachineAI bot)
     {
         bot.idleState();
     }
