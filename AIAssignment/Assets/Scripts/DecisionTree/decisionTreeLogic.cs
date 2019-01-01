@@ -2,150 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using treeAttributes;
 namespace Decisiontree
 {
-    struct delegates
-    {
-        public delegate bool decision (decisionTreeAI bot);
-        public delegate bool gameObjectDecision(decisionTreeAI bot, GameObject obj);
-
-        public delegate bool action(decisionTreeAI bot);
-        public delegate bool gameObjectAction(decisionTreeAI bot, GameObject obj);
-
-    }
-   class Actions
-    {
-        public static bool Move(decisionTreeAI bot, GameObject target)
-        {
-            Debug.Log(target);
-            return bot.getActions().MoveTo(target); 
-        }
-
-        public static bool Attack(decisionTreeAI bot)
-        {
-            bot.getActions().AttackEnemy(bot.getTargetObj());
-            return true;
-        }
-
-        public static bool dropItem(decisionTreeAI bot, GameObject item)
-        {
-            if(bot.GetInventory().HasItem(item.name))
-            {
-                bot.getActions().DropItem(item);
-                if(item == bot.getEnemyFlagObj())
-                {
-                    bot.setFlagCaptured();
-                }
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool pickUpItem(decisionTreeAI bot, GameObject item)
-        {
-            bot.getActions().CollectItem(item);
-            return true;
-        }
-
-        public static bool useItem(decisionTreeAI bot, GameObject item)
-        {
-            bot.getActions().UseItem(item);
-            return true;
-        }
-    }
-
-    class Decisions
-    {
-        public static bool isEnemyFlagCaptured(decisionTreeAI bot)
-        {
-            return bot.enemyFlagAtBase();
-        }
-        public static bool ItemInRange(decisionTreeAI bot, GameObject item)
-        {
-            if (Vector3.Distance(bot.transform.position, item.transform.position) <= bot.getData().PickUpRange)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool checkHealth(decisionTreeAI bot)
-        {
-            if (bot.getData().CurrentHitPoints > bot.getData().CurrentHitPoints / 2)
-            {
-                
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool haveItem(decisionTreeAI bot, GameObject item)
-        {
-            if(bot.GetInventory().HasItem(item.name))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool inAttackRange(decisionTreeAI bot)
-        {
-            if (Vector3.Distance(bot.transform.position, bot.nearestEnemy.transform.position) <= bot.getData().AttackRange)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool enemySeen(decisionTreeAI bot)
-        {
-            if (bot.getSenses().GetEnemiesInView() != null)
-            {
-                bot.setTarget(bot.nearestEnemy);
-
-                if (bot.getTargetObj() != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool atBase(decisionTreeAI bot)
-        {
-            if(Vector3.Distance(bot.transform.position, bot.getBase().transform.position) < 5)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
 
     class Node
     {
@@ -233,6 +92,30 @@ namespace Decisiontree
         }
     }
 
+    class vector3DecisionNode : decisionNode
+    {
+        delegates.vector3Decision _decision;
+        Vector3 Position;
+
+        public vector3DecisionNode(decisionTreeAI bot, delegates.vector3Decision decision, Vector3 Pos) : base(bot, null)
+        {
+            _decision = decision;
+            Position = Pos;
+        }
+
+        public override Node makeDecision()
+        {
+            if(_decision.Invoke(AI, Position))
+            {
+                return yes;
+            }
+            else
+            {
+                return no;
+            }
+        }
+    }
+
     class actionNode : Node
     {
         delegates.action _action;
@@ -263,6 +146,23 @@ namespace Decisiontree
         public override void executeAction()
         {
             _action.Invoke(AI, _obj);
+        }
+    }
+
+    class vector3ActionNode : actionNode
+    {
+        delegates.vector3Action _action;
+        Vector3 Position;
+
+        public vector3ActionNode(decisionTreeAI bot, delegates.vector3Action action, Vector3 Pos) : base(bot, null)
+        {
+            _action = action;
+            Position = Pos;
+        }
+
+        public override void executeAction()
+        {
+            _action.Invoke(AI, Position);
         }
     }
 

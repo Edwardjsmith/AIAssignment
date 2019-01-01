@@ -23,6 +23,13 @@ public class StateMachineAI : AI
 
     public void idleState()
     {
+      
+        if(returnFlagCaptured())
+        {
+            StateMachine.transitionToNewState(saveFlagState.Instance);
+        }
+
+    
         if (getSenses().GetEnemiesInView() != null)
         {
             StateMachine.transitionToNewState(chaseState.Instance);
@@ -39,21 +46,6 @@ public class StateMachineAI : AI
         {
             StateMachine.transitionToNewState(defendFlagState.Instance);
         }
-
-        if (baseEnum == myBase.Blue)
-        {
-            if (blueFlagCaptured)
-            {
-                StateMachine.transitionToNewState(saveFlagState.Instance);
-            }
-        }
-        else
-        {
-            if (redFlagCaptured)
-            {
-                StateMachine.transitionToNewState(saveFlagState.Instance);
-            }
-        }
     }
 
     public void pickupFlag()
@@ -61,6 +53,7 @@ public class StateMachineAI : AI
         if (getSenses().IsItemInReach(target))
         {
             getActions().CollectItem(target);
+            
             StateMachine.transitionToNewState(runFlagToBaseState.Instance);
         }
     }
@@ -158,11 +151,12 @@ public class StateMachineAI : AI
             if (GetInventory().HasItem(getEnemyFlagObj().name))
             {
                 getActions().DropItem(getEnemyFlagObj());
+                setFlagCaptured();
                 StateMachine.transitionToNewState(defendFlagState.Instance);
             }
             else
             {
-                getActions().DropItem(getFirendlyFlagObj());
+                getActions().DropItem(getFriendlyFlagObj());
                 StateMachine.transitionToNewState(searchForFlagState.Instance);
             }
         }
@@ -197,18 +191,42 @@ public class StateMachineAI : AI
             getActions().CollectItem(target);
             StateMachine.transitionToNewState(runFlagToBaseState.Instance);
         }
+        else if (getSenses().GetObjectInViewByName(getEnemyFlagObj().name) && !enemyFlagAtBase())
+        {
+            StateMachine.transitionToNewState(pickupEnemyFlagState.Instance);
+        }
         else if (getSenses().GetEnemiesInView() != null)
         {
             StateMachine.transitionToNewState(chaseState.Instance);
         }
+        
+
     }
     public void defendFlag()
     {
+        getActions().MoveTo(defencePoint);
         if (getSenses().GetEnemiesInView() != null)
         {
             //Pick closest enemy
             target = GetClosestObject(getSenses().GetEnemiesInView());
             StateMachine.transitionToNewState(chaseState.Instance);
+        }
+        else
+        {
+            if (baseEnum == myBase.Blue)
+            {
+                if (blueFlagCaptured)
+                {
+                    StateMachine.transitionToNewState(saveFlagState.Instance);
+                }
+            }
+            else
+            {
+                if (redFlagCaptured)
+                {
+                    StateMachine.transitionToNewState(saveFlagState.Instance);
+                }
+            }
         }
     }
 

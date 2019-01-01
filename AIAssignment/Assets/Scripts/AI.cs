@@ -94,7 +94,7 @@ public class AI : MonoBehaviour
     
 
     public NavMeshAgent agent;
-
+    public GameObject nearestEnemy;
     public enum flagToTake { Blue, Red };
     public flagToTake flag;
    
@@ -109,8 +109,11 @@ public class AI : MonoBehaviour
     public delegate bool queryFlag();
     public delegate bool setFlag();
 
-    protected static bool blueFlagCaptured;
-    protected static bool redFlagCaptured;
+    protected static bool blueFlagCaptured = false;
+    protected static bool redFlagCaptured = false;
+
+    protected static bool blueFlagTaken = false;
+    protected static bool redFlagTaken= false;
 
     protected queryFlag flagAtBase;
     protected setFlag flagtaken;
@@ -122,8 +125,7 @@ public class AI : MonoBehaviour
     GameObject powerup;
     GameObject health;
 
-    Vector3 defencePoint;
-    protected GameObject defenceObject;
+    public Vector3 defencePoint;
 
     // Use this for initialization
     public virtual void Start ()
@@ -144,13 +146,18 @@ public class AI : MonoBehaviour
         flagAtBase += enemyFlagAtBase;
 
         defencePoint = transform.position;
-        defenceObject = new GameObject();
-        defenceObject.transform.position = defencePoint;
+        
+        
     }
 
     public virtual void Update()
     {
         // Run your AI code in here
+        if (getSenses().GetEnemiesInView() != null)
+        {
+            nearestEnemy = GetClosestObject(getSenses().GetEnemiesInView());
+            Debug.Log(nearestEnemy);
+        }
     }
 
 
@@ -166,7 +173,7 @@ public class AI : MonoBehaviour
     {
         return enemyFlag;
     }
-    public GameObject getFirendlyFlagObj()
+    public GameObject getFriendlyFlagObj()
     {
         return friendlyFlag;
     }
@@ -229,20 +236,60 @@ public class AI : MonoBehaviour
         return tMin;
     }
 
-    public bool setFlagCaptured()
+    public bool returnFlagCaptured()
     {
         if (baseEnum == myBase.Blue)
         {
-            if (Vector3.Distance(enemyFlag.transform.position, Base.transform.position) < 5)
+            return blueFlagCaptured;
+        }
+        else
+        {
+            return redFlagCaptured;
+        }
+    }
+
+    public bool setFlagTaken()
+    {
+        if (baseEnum == myBase.Red)
+        {
+            if (GetInventory().HasItem(enemyFlag.name))
             {
-                return redFlagCaptured = true;
+                return blueFlagTaken = true;
             }
             else
             {
-                return redFlagCaptured = false;
+                return blueFlagTaken = false;
             }
         }
         else
+        {
+            if (GetInventory().HasItem(enemyFlag.name))
+            {
+                return redFlagTaken = true;
+            }
+            else
+            {
+                return redFlagTaken = false;
+            }
+        }
+    }
+
+    public bool returnFlagTaken()
+    {
+        if (baseEnum == myBase.Red)
+        {
+            return blueFlagTaken;
+        }
+        else
+        {
+            return redFlagTaken;
+        }
+    }
+
+
+    public bool setFlagCaptured()
+    {
+        if (baseEnum == myBase.Red)
         {
             if (Vector3.Distance(enemyFlag.transform.position, Base.transform.position) < 5)
             {
@@ -251,6 +298,17 @@ public class AI : MonoBehaviour
             else
             {
                 return blueFlagCaptured = false;
+            }
+        }
+        else
+        {
+            if (Vector3.Distance(enemyFlag.transform.position, Base.transform.position) < 5)
+            {
+                return redFlagCaptured = true;
+            }
+            else
+            {
+                return redFlagCaptured = false;
             }
         }
     }
@@ -261,22 +319,22 @@ public class AI : MonoBehaviour
         {
             if (Vector3.Distance(friendlyFlag.transform.position, Base.transform.position) < 5)
             {
-                return redFlagCaptured = false;
+                return blueFlagCaptured = false;
             }
             else
             {
-                return redFlagCaptured = true;
+                return blueFlagCaptured = true;
             }
         }
         else
         {
             if (Vector3.Distance(friendlyFlag.transform.position, Base.transform.position) < 5)
             {
-                return blueFlagCaptured = false;
+                return redFlagCaptured = false;
             }
             else
             {
-                return blueFlagCaptured = true;
+                return redFlagCaptured = true;
             }
         }
     }

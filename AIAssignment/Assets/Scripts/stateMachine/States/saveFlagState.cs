@@ -34,7 +34,7 @@ public class saveFlagState : State<StateMachineAI>
 
     public override void EnterState(StateMachineAI bot)
     {
-        bot.setTarget(bot.getFirendlyFlagObj());
+        bot.setTarget(bot.getFriendlyFlagObj());
         bot.getActions().MoveTo(bot.getTargetPosition());
     }
 
