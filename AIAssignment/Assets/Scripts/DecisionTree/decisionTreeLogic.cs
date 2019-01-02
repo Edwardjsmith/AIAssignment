@@ -10,6 +10,7 @@ namespace Decisiontree
     {
         protected decisionTreeAI AI;
         protected bool _isLeaf;
+        public string nodeName;
 
         public bool isLeaf()
         {
@@ -43,6 +44,7 @@ namespace Decisiontree
             yes = null;
             no = null;
             _decision = decision;
+
         }
 
         public void addYesChild(Node child)
@@ -124,6 +126,7 @@ namespace Decisiontree
         {
             _isLeaf = true;
             _action = action;
+            //nodeName = _action.ToString();
         }
 
         public override void executeAction()
@@ -179,15 +182,23 @@ namespace Decisiontree
 
         void TraverseTree(Node current)
         {
-            if (current.isLeaf())
+
+            
+            currentNode = current;
+            if (currentNode.isLeaf())
             {
                 current.executeAction();
             }
             else
             {
-                current = current.makeDecision();
-                TraverseTree(current);
+                currentNode = currentNode.makeDecision();
+                TraverseTree(currentNode);
             }
+        }
+
+        public Node returnCurrent()
+        {
+            return currentNode;
         }
 
         public void executeAction()

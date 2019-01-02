@@ -76,7 +76,29 @@ public class decisionTreeAI : AI {
         gameObjectDecisonNode haveEnemyFlagTwo = new gameObjectDecisonNode(this, checkInv, getEnemyFlagObj());
 
 
-        friendlyFlagAtBase.addNoChild(seenHealth);
+        friendlyFlagAtBase.addYesChild(seenHealth);
+        friendlyFlagAtBase.addNoChild(seenHealthTwo);
+
+        seenHealthTwo.addYesChild(isHealthInRange);
+        seenHealthTwo.addNoChild(seenPowerupTwo);
+
+        seenPowerupTwo.addYesChild(ispowerInRange);
+        seenPowerupTwo.addNoChild(isEnemyNearTwo);
+
+        isEnemyNearTwo.addYesChild(haveFriendlyFlagTwo);
+        isEnemyNearTwo.addNoChild(haveFriendlyFlag);
+
+        haveFriendlyFlagTwo.addYesChild(atBaseFriendlyFlag);
+        haveFriendlyFlagTwo.addNoChild(checkMyHealth);
+
+        haveFriendlyFlag.addYesChild(atBaseFriendlyFlag);
+        haveFriendlyFlag.addNoChild(friendlyFlagInRange);
+
+        atBaseFriendlyFlag.addYesChild(dropFriendlyFlag);
+        atBaseFriendlyFlag.addNoChild(makeMoveToBase);
+
+        friendlyFlagInRange.addYesChild(pickUpFriendlyFlag);
+        friendlyFlagInRange.addNoChild(makeMoveToFriendlyFlag);
 
         seenHealth.addYesChild(isHealthInRange);
         seenHealth.addNoChild(seenPowerup);
@@ -120,33 +142,9 @@ public class decisionTreeAI : AI {
         isEnemyFlagInRange.addYesChild(pickUpEnemyFlag);
         isEnemyFlagInRange.addNoChild(makeMoveToEnemyFlag);
 
-       
 
-        friendlyFlagAtBase.addYesChild(seenHealthTwo);
 
-        seenHealthTwo.addYesChild(isHealthInRange);
-        seenHealthTwo.addNoChild(seenPowerupTwo);
 
-        seenPowerupTwo.addYesChild(ispowerInRange);
-        seenPowerupTwo.addNoChild(isEnemyNearTwo);
-
-        isEnemyNearTwo.addYesChild(haveFriendlyFlagTwo);
-        isEnemyNearTwo.addNoChild(haveFriendlyFlag);
-
-        haveFriendlyFlagTwo.addYesChild(atBaseFriendlyFlag);
-        haveFriendlyFlagTwo.addNoChild(checkMyHealth);
-
-        haveFriendlyFlag.addYesChild(atBaseFriendlyFlag);
-        haveFriendlyFlag.addNoChild(friendlyFlagInRange);
-
-        atBaseFriendlyFlag.addYesChild(dropFriendlyFlag);
-        atBaseFriendlyFlag.addNoChild(makeMoveToBase);
-
-        friendlyFlagInRange.addYesChild(pickUpFriendlyFlag);
-        friendlyFlagInRange.addNoChild(makeMoveToFriendlyFlag);
-
-        
-        
         decisionTree = new DecisionTree(friendlyFlagAtBase);
 
     }
@@ -156,5 +154,6 @@ public class decisionTreeAI : AI {
     {
         base.Update();
         decisionTree.executeAction();
+        //Debug.Log(decisionTree.returnCurrent().nodeName);
 	}
 }

@@ -24,7 +24,7 @@ public class StateMachineAI : AI
     public void idleState()
     {
       
-        if(returnFlagCaptured())
+        if(getFlagCaptured())
         {
             StateMachine.transitionToNewState(saveFlagState.Instance);
         }
@@ -34,7 +34,7 @@ public class StateMachineAI : AI
         {
             StateMachine.transitionToNewState(chaseState.Instance);
         }
-        if (getSenses().GetObjectInViewByName(getEnemyFlagObj().name) && !enemyFlagAtBase())
+        if (!getFlagCaptured() && getSenses().GetObjectInViewByName(getEnemyFlagObj().name) && !enemyFlagAtBase())
         {
             StateMachine.transitionToNewState(pickupEnemyFlagState.Instance);
         }
@@ -54,6 +54,11 @@ public class StateMachineAI : AI
         {
             getActions().CollectItem(target);
             
+            if(target == getEnemyFlagObj())
+            {
+                setFlagTaken();
+            }
+
             StateMachine.transitionToNewState(runFlagToBaseState.Instance);
         }
     }
@@ -186,7 +191,11 @@ public class StateMachineAI : AI
 
     public void saveFlag()
     {
-        if (getSenses().IsItemInReach(target))
+        if(getSenses().GetFriendliesInView() == null)
+        {
+            getActions().MoveTo(defencePoint);
+        }
+        else if (getSenses().IsItemInReach(target))
         { 
             getActions().CollectItem(target);
             StateMachine.transitionToNewState(runFlagToBaseState.Instance);

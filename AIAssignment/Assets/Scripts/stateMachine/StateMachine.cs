@@ -1,9 +1,9 @@
 ﻿
 namespace StateMachine
 {
-    public class stateMachine<StateMachineAI> //Could easily be set to take a type T for extra flexibility but since all of my scripts will derive from AI, I can be explicit
+    public class stateMachine<StateMachineAI> //Could easily be set to be a template for extra flexibility but since only one type of AI is using it, I'm explicit
     {
-        public State<StateMachineAI> currentState { get; set; } //Used to store, check and set current state
+        public State<StateMachineAI> currentState { get; set; } //Used to get and set current state
         public StateMachineAI ai; 
 
         public stateMachine(StateMachineAI bot)

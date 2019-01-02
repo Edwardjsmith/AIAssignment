@@ -115,9 +115,6 @@ public class AI : MonoBehaviour
     protected static bool blueFlagTaken = false;
     protected static bool redFlagTaken= false;
 
-    protected queryFlag flagAtBase;
-    protected setFlag flagtaken;
-
     protected float fleeTimer = 10.0f;
 
     GameObject enemyFlag;
@@ -142,9 +139,6 @@ public class AI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         powerup = GameObject.Find("Power Up");
         health = GameObject.Find("Health Kit");
-
-        flagAtBase += enemyFlagAtBase;
-
         defencePoint = transform.position;
         
         
@@ -206,7 +200,14 @@ public class AI : MonoBehaviour
 
     public Vector3 getTargetPosition()
     {
-        return target.transform.position;
+        if (target != null)
+        {
+            return target.transform.position;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
     }
 
     public GameObject getTargetObj()
@@ -236,7 +237,7 @@ public class AI : MonoBehaviour
         return tMin;
     }
 
-    public bool returnFlagCaptured()
+    public bool getFlagCaptured()
     {
         if (baseEnum == myBase.Blue)
         {
@@ -286,6 +287,17 @@ public class AI : MonoBehaviour
         }
     }
 
+    public void resetFlagTaken()
+    {
+        if (baseEnum == myBase.Blue)
+        {
+            blueFlagTaken = false;
+        }
+        else
+        {
+            redFlagTaken = false;
+        }
+    }
 
     public bool setFlagCaptured()
     {

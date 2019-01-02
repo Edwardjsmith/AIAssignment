@@ -60,6 +60,10 @@ namespace treeAttributes
         public static bool pickUpItem(AI bot, GameObject item)
         {
             bot.getActions().CollectItem(item);
+            if(item == bot.getFriendlyFlagObj())
+            {
+                bot.resetFlagTaken();
+            }
             return true;
         }
 
@@ -75,7 +79,14 @@ namespace treeAttributes
 
         public static bool friendlyFlagTaken(AI bot)
         {
-            return bot.returnFlagCaptured();
+            if(!bot.getFlagCaptured() && !bot.returnFlagTaken())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         public static bool isPoweredUp(AI bot)
         {
@@ -161,7 +172,7 @@ namespace treeAttributes
             {
                 foreach(GameObject obj in bot.getSenses().GetCollectablesInView())
                 {
-                    if(obj == item)
+                    if(obj == item && obj.transform.parent == null)
                     {
                         return true;
                     }
