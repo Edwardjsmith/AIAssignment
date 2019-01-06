@@ -76,71 +76,71 @@ public class decisionTreeAI : AI {
         gameObjectDecisonNode haveEnemyFlagTwo = new gameObjectDecisonNode(this, checkInv, getEnemyFlagObj());
 
 
-        friendlyFlagAtBase.addYesChild(seenHealth);
-        friendlyFlagAtBase.addNoChild(seenHealthTwo);
+        friendlyFlagAtBase.addLeftChild(seenHealth);
+        friendlyFlagAtBase.addRightChild(seenHealthTwo);
 
-        seenHealthTwo.addYesChild(isHealthInRange);
-        seenHealthTwo.addNoChild(seenPowerupTwo);
+        seenHealthTwo.addLeftChild(isHealthInRange);
+        seenHealthTwo.addRightChild(seenPowerupTwo);
 
-        seenPowerupTwo.addYesChild(ispowerInRange);
-        seenPowerupTwo.addNoChild(isEnemyNearTwo);
+        seenPowerupTwo.addLeftChild(ispowerInRange);
+        seenPowerupTwo.addRightChild(isEnemyNearTwo);
 
-        isEnemyNearTwo.addYesChild(haveFriendlyFlagTwo);
-        isEnemyNearTwo.addNoChild(haveFriendlyFlag);
+        isEnemyNearTwo.addLeftChild(haveFriendlyFlagTwo);
+        isEnemyNearTwo.addRightChild(haveFriendlyFlag);
 
-        haveFriendlyFlagTwo.addYesChild(atBaseFriendlyFlag);
-        haveFriendlyFlagTwo.addNoChild(checkMyHealth);
+        haveFriendlyFlagTwo.addLeftChild(atBaseFriendlyFlag);
+        haveFriendlyFlagTwo.addRightChild(checkMyHealth);
 
-        haveFriendlyFlag.addYesChild(atBaseFriendlyFlag);
-        haveFriendlyFlag.addNoChild(friendlyFlagInRange);
+        haveFriendlyFlag.addLeftChild(atBaseFriendlyFlag);
+        haveFriendlyFlag.addRightChild(friendlyFlagInRange);
 
-        atBaseFriendlyFlag.addYesChild(dropFriendlyFlag);
-        atBaseFriendlyFlag.addNoChild(makeMoveToBase);
+        atBaseFriendlyFlag.addLeftChild(dropFriendlyFlag);
+        atBaseFriendlyFlag.addRightChild(makeMoveToBase);
 
-        friendlyFlagInRange.addYesChild(pickUpFriendlyFlag);
-        friendlyFlagInRange.addNoChild(makeMoveToFriendlyFlag);
+        friendlyFlagInRange.addLeftChild(pickUpFriendlyFlag);
+        friendlyFlagInRange.addRightChild(makeMoveToFriendlyFlag);
 
-        seenHealth.addYesChild(isHealthInRange);
-        seenHealth.addNoChild(seenPowerup);
+        seenHealth.addLeftChild(isHealthInRange);
+        seenHealth.addRightChild(seenPowerup);
 
-        isHealthInRange.addYesChild(pickupHealth);
-        isHealthInRange.addNoChild(makeMoveToHealth);
+        isHealthInRange.addLeftChild(pickupHealth);
+        isHealthInRange.addRightChild(makeMoveToHealth);
 
-        seenPowerup.addYesChild(ispowerInRange);
-        seenPowerup.addNoChild(isEnemyNear);
+        seenPowerup.addLeftChild(ispowerInRange);
+        seenPowerup.addRightChild(isEnemyNear);
 
-        ispowerInRange.addYesChild(pickuppowerup);
-        ispowerInRange.addNoChild(makeMoveToPowerup);
+        ispowerInRange.addLeftChild(pickuppowerup);
+        ispowerInRange.addRightChild(makeMoveToPowerup);
 
-        isEnemyNear.addYesChild(haveEnemyFlagTwo);
-        isEnemyNear.addNoChild(isEnemyFlagAtBase);
+        isEnemyNear.addLeftChild(haveEnemyFlagTwo);
+        isEnemyNear.addRightChild(isEnemyFlagAtBase);
 
-        haveEnemyFlagTwo.addYesChild(atBaseEnemyFlag);
-        haveEnemyFlagTwo.addNoChild(checkMyHealth);
+        haveEnemyFlagTwo.addLeftChild(atBaseEnemyFlag);
+        haveEnemyFlagTwo.addRightChild(checkMyHealth);
 
-        checkMyHealth.addYesChild(checkForPowerUp);
-        checkMyHealth.addNoChild(checkForHealthKit);
+        checkMyHealth.addLeftChild(checkForPowerUp);
+        checkMyHealth.addRightChild(checkForHealthKit);
 
-        isEnemyFlagAtBase.addYesChild(makeMoveToDefend);
-        isEnemyFlagAtBase.addNoChild(haveEnemyFlag);
+        isEnemyFlagAtBase.addLeftChild(makeMoveToDefend);
+        isEnemyFlagAtBase.addRightChild(haveEnemyFlag);
 
-        checkForPowerUp.addYesChild(usePowerUp);
-        checkForPowerUp.addNoChild(isInAttackRange);
+        checkForPowerUp.addLeftChild(usePowerUp);
+        checkForPowerUp.addRightChild(isInAttackRange);
 
-        checkForHealthKit.addYesChild(useHealthKit);
-        checkForHealthKit.addNoChild(makeMoveToHealth);
+        checkForHealthKit.addLeftChild(useHealthKit);
+        checkForHealthKit.addRightChild(makeMoveToHealth);
 
-        isInAttackRange.addYesChild(attackEnemy);
-        isInAttackRange.addNoChild(makeMoveToEnemy);
+        isInAttackRange.addLeftChild(attackEnemy);
+        isInAttackRange.addRightChild(makeMoveToEnemy);
 
-        haveEnemyFlag.addYesChild(atBaseEnemyFlag);
-        haveEnemyFlag.addNoChild(isEnemyFlagInRange);
+        haveEnemyFlag.addLeftChild(atBaseEnemyFlag);
+        haveEnemyFlag.addRightChild(isEnemyFlagInRange);
 
-        atBaseEnemyFlag.addYesChild(dropEnemyFlag);
-        atBaseEnemyFlag.addNoChild(makeMoveToBase);
+        atBaseEnemyFlag.addLeftChild(dropEnemyFlag);
+        atBaseEnemyFlag.addRightChild(makeMoveToBase);
 
-        isEnemyFlagInRange.addYesChild(pickUpEnemyFlag);
-        isEnemyFlagInRange.addNoChild(makeMoveToEnemyFlag);
+        isEnemyFlagInRange.addLeftChild(pickUpEnemyFlag);
+        isEnemyFlagInRange.addRightChild(makeMoveToEnemyFlag);
 
 
 

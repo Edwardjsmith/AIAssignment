@@ -33,39 +33,39 @@ namespace Decisiontree
     
     class decisionNode : Node
     {
-        protected Node yes;
-        protected Node no;
+        protected Node left;
+        protected Node right;
 
         delegates.decision _decision;
 
         public decisionNode(decisionTreeAI bot, delegates.decision decision) : base(bot)
         {
             _isLeaf = false;
-            yes = null;
-            no = null;
+            left = null;
+            right = null;
             _decision = decision;
 
         }
 
-        public void addYesChild(Node child)
+        public void addLeftChild(Node child)
         {
-            yes = child;
+            left = child;
         }
 
-        public void addNoChild(Node child)
+        public void addRightChild(Node child)
         {
-            no = child;
+            right = child;
         }
 
         public override Node makeDecision()
         {
             if (_decision.Invoke(AI))
             {
-                return yes;
+                return left;
             }
             else
             {
-                return no;
+                return right;
             }
         }
     }
@@ -85,11 +85,11 @@ namespace Decisiontree
         {
             if (_decision.Invoke(AI, _obj))
             {
-                return yes;
+                return left;
             }
             else
             {
-                return no;
+                return right;
             }
         }
     }
@@ -109,11 +109,11 @@ namespace Decisiontree
         {
             if(_decision.Invoke(AI, Position))
             {
-                return yes;
+                return left;
             }
             else
             {
-                return no;
+                return right;
             }
         }
     }
@@ -203,7 +203,7 @@ namespace Decisiontree
 
         public void executeAction()
         {
-            TraverseTree(rootNode);
+            currentNode.makeDecision();
         }
     }
 }
