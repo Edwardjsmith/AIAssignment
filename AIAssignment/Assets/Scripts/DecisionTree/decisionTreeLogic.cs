@@ -203,7 +203,7 @@ namespace Decisiontree
 
         public void executeAction()
         {
-            currentNode.makeDecision();
+            TraverseTree(rootNode);
         }
     }
 }

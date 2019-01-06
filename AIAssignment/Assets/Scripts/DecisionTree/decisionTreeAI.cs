@@ -154,6 +154,6 @@ public class decisionTreeAI : AI {
     {
         base.Update();
         decisionTree.executeAction();
-        //Debug.Log(decisionTree.returnCurrent().nodeName);
+       
 	}
 }
