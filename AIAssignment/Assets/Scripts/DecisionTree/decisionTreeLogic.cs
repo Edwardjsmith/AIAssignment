@@ -48,7 +48,16 @@ namespace Decisiontree
         public override Node getBranch()
         {
             evaluateChildren();
-            return chosenBranch;
+
+            if (chosenBranch.isAction)
+            {
+                chosenBranch.executeAction();
+                return chosenBranch;
+            }
+            else
+            {
+                return chosenBranch;
+            }
         }
 
         protected virtual void evaluateChildren()
@@ -150,21 +159,17 @@ namespace Decisiontree
             rootNode = root;
         }
 
-        void traverseTree(Node current)
+        void makeDecision(Node current)
         {
-            if (current.isAction)
+            if (current != null)
             {
-                current.executeAction();
-            }
-            else
-            {
-                traverseTree(current.getBranch());
+                makeDecision(current.getBranch());
             }
         }
 
         public void updateTree()
         {
-            traverseTree(rootNode);
+            makeDecision(rootNode);
         }
     }
 }
