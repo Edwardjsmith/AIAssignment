@@ -76,74 +76,51 @@ public class decisionTreeAI : AI {
         gameObjectDecisonNode haveEnemyFlagTwo = new gameObjectDecisonNode(this, checkInv, getEnemyFlagObj());
 
 
-        friendlyFlagAtBase.addLeftChild(seenHealth);
-        friendlyFlagAtBase.addRightChild(seenHealthTwo);
 
-        seenHealthTwo.addLeftChild(isHealthInRange);
-        seenHealthTwo.addRightChild(seenPowerupTwo);
+        //First passed in child is the left node and the second is the right
+        friendlyFlagAtBase.addChildren(seenHealth, seenHealthTwo);
 
-        seenPowerupTwo.addLeftChild(ispowerInRange);
-        seenPowerupTwo.addRightChild(isEnemyNearTwo);
+        seenHealthTwo.addChildren(isHealthInRange, seenPowerupTwo);
 
-        isEnemyNearTwo.addLeftChild(haveFriendlyFlagTwo);
-        isEnemyNearTwo.addRightChild(haveFriendlyFlag);
+        seenPowerupTwo.addChildren(ispowerInRange, isEnemyNearTwo);
 
-        haveFriendlyFlagTwo.addLeftChild(atBaseFriendlyFlag);
-        haveFriendlyFlagTwo.addRightChild(checkMyHealth);
+        isEnemyNearTwo.addChildren(haveFriendlyFlagTwo, haveEnemyFlag);
 
-        haveFriendlyFlag.addLeftChild(atBaseFriendlyFlag);
-        haveFriendlyFlag.addRightChild(friendlyFlagInRange);
+        haveFriendlyFlagTwo.addChildren(atBaseFriendlyFlag, checkMyHealth);
 
-        atBaseFriendlyFlag.addLeftChild(dropFriendlyFlag);
-        atBaseFriendlyFlag.addRightChild(makeMoveToBase);
+        haveFriendlyFlag.addChildren(atBaseFriendlyFlag, friendlyFlagInRange);
+   
+        atBaseFriendlyFlag.addChildren(dropFriendlyFlag, makeMoveToBase);
 
-        friendlyFlagInRange.addLeftChild(pickUpFriendlyFlag);
-        friendlyFlagInRange.addRightChild(makeMoveToFriendlyFlag);
+        friendlyFlagInRange.addChildren(pickUpFriendlyFlag, makeMoveToFriendlyFlag);
 
-        seenHealth.addLeftChild(isHealthInRange);
-        seenHealth.addRightChild(seenPowerup);
+        seenHealth.addChildren(isHealthInRange, seenPowerup);
 
-        isHealthInRange.addLeftChild(pickupHealth);
-        isHealthInRange.addRightChild(makeMoveToHealth);
+        isHealthInRange.addChildren(pickupHealth, makeMoveToHealth);
 
-        seenPowerup.addLeftChild(ispowerInRange);
-        seenPowerup.addRightChild(isEnemyNear);
+        seenPowerup.addChildren(ispowerInRange, isEnemyNear);
 
-        ispowerInRange.addLeftChild(pickuppowerup);
-        ispowerInRange.addRightChild(makeMoveToPowerup);
+        ispowerInRange.addChildren(pickuppowerup, makeMoveToPowerup);
 
-        isEnemyNear.addLeftChild(haveEnemyFlagTwo);
-        isEnemyNear.addRightChild(isEnemyFlagAtBase);
+        isEnemyNear.addChildren(haveEnemyFlagTwo, isEnemyFlagAtBase);
 
-        haveEnemyFlagTwo.addLeftChild(atBaseEnemyFlag);
-        haveEnemyFlagTwo.addRightChild(checkMyHealth);
+        haveEnemyFlagTwo.addChildren(atBaseEnemyFlag, checkMyHealth);
 
-        checkMyHealth.addLeftChild(checkForPowerUp);
-        checkMyHealth.addRightChild(checkForHealthKit);
+        checkMyHealth.addChildren(checkForPowerUp, checkForHealthKit);
 
-        isEnemyFlagAtBase.addLeftChild(makeMoveToDefend);
-        isEnemyFlagAtBase.addRightChild(haveEnemyFlag);
+        isEnemyFlagAtBase.addChildren(makeMoveToDefend, haveEnemyFlag);
 
-        checkForPowerUp.addLeftChild(usePowerUp);
-        checkForPowerUp.addRightChild(isInAttackRange);
+        checkForPowerUp.addChildren(usePowerUp, isInAttackRange);
 
-        checkForHealthKit.addLeftChild(useHealthKit);
-        checkForHealthKit.addRightChild(makeMoveToHealth);
+        checkForHealthKit.addChildren(useHealthKit, makeMoveToHealth);
 
-        isInAttackRange.addLeftChild(attackEnemy);
-        isInAttackRange.addRightChild(makeMoveToEnemy);
+        isInAttackRange.addChildren(attackEnemy, makeMoveToEnemy);
 
-        haveEnemyFlag.addLeftChild(atBaseEnemyFlag);
-        haveEnemyFlag.addRightChild(isEnemyFlagInRange);
+        haveEnemyFlag.addChildren(atBaseEnemyFlag,isEnemyFlagInRange);
 
-        atBaseEnemyFlag.addLeftChild(dropEnemyFlag);
-        atBaseEnemyFlag.addRightChild(makeMoveToBase);
+        atBaseEnemyFlag.addChildren(dropEnemyFlag, makeMoveToBase);
 
-        isEnemyFlagInRange.addLeftChild(pickUpEnemyFlag);
-        isEnemyFlagInRange.addRightChild(makeMoveToEnemyFlag);
-
-
-
+        isEnemyFlagInRange.addChildren(pickUpEnemyFlag, makeMoveToEnemyFlag);
 
         decisionTree = new DecisionTree(friendlyFlagAtBase);
 
@@ -153,7 +130,6 @@ public class decisionTreeAI : AI {
 	public override void Update ()
     {
         base.Update();
-        decisionTree.executeAction();
-       
+        decisionTree.updateTree();
 	}
 }

@@ -9,20 +9,14 @@ namespace Decisiontree
     class Node
     {
         protected decisionTreeAI AI;
-        protected bool _isLeaf;
-        public string nodeName;
-
-        public bool isLeaf()
-        {
-           return _isLeaf; 
-        }
+        public bool isAction;  
 
         public Node(decisionTreeAI bot)
         {
             AI = bot;
         }
 
-        public virtual Node makeDecision()
+        public virtual Node getBranch()
         {
             return null;
         }
@@ -33,177 +27,144 @@ namespace Decisiontree
     
     class decisionNode : Node
     {
-        protected Node left;
-        protected Node right;
+        protected List<Node> children;
+        protected Node chosenBranch;
 
-        delegates.decision _decision;
+        delegates.decision decision;
 
         public decisionNode(decisionTreeAI bot, delegates.decision decision) : base(bot)
         {
-            _isLeaf = false;
-            left = null;
-            right = null;
-            _decision = decision;
-
+            isAction = false;
+            children = new List<Node>();
+            this.decision = decision;
         }
 
-        public void addLeftChild(Node child)
+        public void addChildren(Node childLeft, Node childRight)
         {
-            left = child;
+            children.Insert(0, childLeft);
+            children.Insert(1, childRight);
         }
 
-        public void addRightChild(Node child)
+        public override Node getBranch()
         {
-            right = child;
+            evaluateChildren();
+            return chosenBranch;
         }
 
-        public override Node makeDecision()
+        protected virtual void evaluateChildren()
         {
-            if (_decision.Invoke(AI))
-            {
-                return left;
-            }
-            else
-            {
-                return right;
-            }
+            chosenBranch = decision.Invoke(AI) ? children[0] : children[1];
         }
     }
 
     class gameObjectDecisonNode : decisionNode
     {
-        delegates.gameObjectDecision _decision;
-        GameObject _obj;
+        delegates.gameObjectDecision decision;
+        GameObject obj;
 
         public gameObjectDecisonNode(decisionTreeAI bot, delegates.gameObjectDecision decision, GameObject obj) : base(bot, null)
         {
-            _decision = decision;
-            _obj = obj;
+            this.decision = decision;
+            this.obj = obj;
         }
 
-        public override Node makeDecision()
+        protected override void evaluateChildren()
         {
-            if (_decision.Invoke(AI, _obj))
-            {
-                return left;
-            }
-            else
-            {
-                return right;
-            }
+            chosenBranch = decision.Invoke(AI, obj) ? children[0] : children[1];
         }
     }
 
     class vector3DecisionNode : decisionNode
     {
-        delegates.vector3Decision _decision;
-        Vector3 Position;
+        delegates.vector3Decision decision;
+        Vector3 position;
 
         public vector3DecisionNode(decisionTreeAI bot, delegates.vector3Decision decision, Vector3 Pos) : base(bot, null)
         {
-            _decision = decision;
-            Position = Pos;
+            this.decision = decision;
+            position = Pos;
         }
 
-        public override Node makeDecision()
+        protected override void evaluateChildren()
         {
-            if(_decision.Invoke(AI, Position))
-            {
-                return left;
-            }
-            else
-            {
-                return right;
-            }
+            chosenBranch = decision.Invoke(AI, position) ? children[0] : children[1];
         }
     }
 
     class actionNode : Node
     {
-        delegates.action _action;
+        delegates.action action;
 
         public actionNode(decisionTreeAI bot, delegates.action action) : base(bot)
         {
-            _isLeaf = true;
-            _action = action;
-            //nodeName = _action.ToString();
+            base.isAction = true;
+            this.action = action;
         }
 
         public override void executeAction()
         {
-            _action.Invoke(AI);
+            action.Invoke(AI);
         }
     }
 
     class gameObjectActionNode : actionNode
     {
-        delegates.gameObjectAction _action;
-        GameObject _obj;
+        delegates.gameObjectAction action;
+        GameObject obj;
 
         public gameObjectActionNode(decisionTreeAI bot, delegates.gameObjectAction action, GameObject obj) : base(bot, null)
         {
-            _action = action;
-            _obj = obj;
+            this.action = action;
+            this.obj = obj;
         }
 
         public override void executeAction()
         {
-            _action.Invoke(AI, _obj);
+            action.Invoke(AI, obj);
         }
     }
 
     class vector3ActionNode : actionNode
     {
-        delegates.vector3Action _action;
-        Vector3 Position;
+        delegates.vector3Action action;
+        Vector3 position;
 
         public vector3ActionNode(decisionTreeAI bot, delegates.vector3Action action, Vector3 Pos) : base(bot, null)
         {
-            _action = action;
-            Position = Pos;
+            this.action = action;
+            position = Pos;
         }
 
         public override void executeAction()
         {
-            _action.Invoke(AI, Position);
+            action.Invoke(AI, position);
         }
     }
 
     class DecisionTree
     {
         Node rootNode;
-        Node currentNode;
         
         public DecisionTree(Node root)
         {
             rootNode = root;
-            currentNode = null;
         }
 
-        void TraverseTree(Node current)
+        void traverseTree(Node current)
         {
-
-            
-            currentNode = current;
-            if (currentNode.isLeaf())
+            if (current.isAction)
             {
                 current.executeAction();
             }
             else
             {
-                currentNode = currentNode.makeDecision();
-                TraverseTree(currentNode);
+                traverseTree(current.getBranch());
             }
         }
 
-        public Node returnCurrent()
+        public void updateTree()
         {
-            return currentNode;
-        }
-
-        public void executeAction()
-        {
-            TraverseTree(rootNode);
+            traverseTree(rootNode);
         }
     }
 }
